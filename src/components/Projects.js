@@ -10,6 +10,8 @@ import AddProject from './AddProject';
 
 import { useQuery, gql, useMutation } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
+import { connect } from 'react-redux';
+import { setSelectedProject } from '../store/actions.js';
 
 const PROJECTS = gql`
   query GetProjects {
@@ -42,24 +44,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const renderProject = (project) => {
-  const { title } = project;
-
-  return (
-    <>
-      <ListItem>
-        <ListItemText primary={title} />
-      </ListItem>
-      <Divider />
-    </>
-  );
-};
-export default function Projects() {
+function Projects({ setSelectedProject }) {
   const classes = useStyles();
   const { loading, error, data: projectsData } = useQuery(PROJECTS);
   const [addProject, { data }] = useMutation(ADD_PROJECT);
 
   const [openModal, setOpenModal] = React.useState(false);
+  const [selection, setSelection] = React.useState(null);
 
   const handleAddProject = () => {
     setOpenModal(true);
@@ -72,6 +63,24 @@ export default function Projects() {
   const handleConfirm = (value) => {
     addProject({ variables: { input: { title: value } }, refetchQueries: ['GetProjects'] });
     handleClose();
+  };
+
+  const handleProjectSelected = (id) => {
+    setSelection(id);
+    setSelectedProject(id);
+  };
+
+  const renderProject = (project) => {
+    const { title, id } = project;
+
+    return (
+      <>
+        <ListItem button onClick={() => handleProjectSelected(id)} selected={id === selection}>
+          <ListItemText primary={title} />
+        </ListItem>
+        <Divider />
+      </>
+    );
   };
 
   if (loading) return 'Loading...';
@@ -97,3 +106,10 @@ export default function Projects() {
     </>
   );
 }
+
+const mapStateToProps = (state) => {
+  return null;
+};
+export default connect(mapStateToProps, {
+  setSelectedProject: setSelectedProject,
+})(Projects);

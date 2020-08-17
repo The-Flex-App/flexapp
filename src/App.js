@@ -10,6 +10,9 @@ import Projects from './components/Projects';
 import Copyright from './components/Copyright';
 import Videos from './components/Videos';
 
+import { Provider } from 'react-redux';
+import store from '../src/store';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -25,24 +28,26 @@ function App() {
   const classes = useStyles();
 
   return (
-    <Container maxWidth="lg" className={classes.root}>
-      <Grid container spacing={1}>
+    <Provider store={store}>
+      <Container maxWidth="lg" className={classes.root}>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <ButtonAppBar />
+          </Grid>
+          <Grid item xs={3} className="project-list">
+            <Projects />
+          </Grid>
+          <Grid item xs={9}>
+            <Videos />
+          </Grid>
+        </Grid>
         <Grid item xs={12}>
-          <ButtonAppBar />
+          <Paper className={classes.paper}>
+            <Copyright />
+          </Paper>
         </Grid>
-        <Grid item xs={3} className="project-list">
-          <Projects />
-        </Grid>
-        <Grid item xs={9}>
-          <Videos />
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Paper className={classes.paper}>
-          <Copyright />
-        </Paper>
-      </Grid>
-    </Container>
+      </Container>
+    </Provider>
   );
 }
 
