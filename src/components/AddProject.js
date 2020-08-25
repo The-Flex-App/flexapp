@@ -4,34 +4,67 @@ import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { gql, useMutation } from '@apollo/client';
 
+const ADD_PROJECT = gql`
+  mutation CreateProject($input: ProjectInput!) {
+    createProject(input: $input) {
+      id
+      title
+    }
+  }
+`;
 export default function AddProject(props) {
-  const { open, onClose, onConfirm } = props;
+  const { open, onClose } = props;
   const [newProject, setNewProject] = React.useState(false);
+
+  const [addProject] = useMutation(ADD_PROJECT);
+  const [error, setError] = React.useState();
 
   const handleInputChange = (e) => {
     setNewProject(e.target.value);
   };
 
-  const handleConfirm = () => {
-    onConfirm(newProject);
+  const handleClose = () => {
+    setError(null);
+    onClose();
+  };
+
+  const handleConfirm = async () => {
+    try {
+      await addProject({
+        variables: { input: { title: newProject } },
+        refetchQueries: ['GetProjects'],
+      });
+      handleClose();
+    } catch (e) {
+      setError(e);
+    }
   };
 
   return (
     <div>
-      <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
+      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">Add new project</DialogTitle>
         <DialogContent>
-          <DialogContentText>Please enter the project name</DialogContentText>
-          <TextField autoFocus margin="dense" id="name" label="Project name" fullWidth onChange={handleInputChange} />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Project name"
+            fullWidth
+            onChange={handleInputChange}
+            variant="outlined"
+            error={error}
+            helperText={error && error.message}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleConfirm} color="primary" type="button">
+          <Button onClick={handleConfirm} color="primary" type="button" variant="contained">
             Add Project
           </Button>
         </DialogActions>

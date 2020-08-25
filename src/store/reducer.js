@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import { SET_SELECTED_PROJECT } from './types.js';
 
-function appSettings(state = {}, action) {
+function selectedProjectReduer(state = {}, action) {
   const { type, payload } = action;
   switch (type) {
     case SET_SELECTED_PROJECT:
@@ -16,7 +16,7 @@ function appSettings(state = {}, action) {
 }
 
 const reducer = combineReducers({
-  appSettings,
+  selectedProject: selectedProjectReduer,
 });
 
 export default reducer;

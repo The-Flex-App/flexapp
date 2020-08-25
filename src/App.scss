@@ -4,3 +4,13 @@
   overflow: auto;
   height: 40rem;
 }
+
+.videos-list {
+  padding-left: 1rem !important;
+}
+
+[class*='render-actions__ActionsWrapper'] {
+  top: 50% !important;
+  padding: 0 !important;
+  bottom: inherit !important;
+}
