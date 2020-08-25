@@ -4,15 +4,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
-// const client = new ApolloClient({
-//   uri: 'http://3.8.172.18:8080/graphql',
-//   cache: new InMemoryCache(),
-// });
-
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/graphql',
+  uri: 'https://api.anshconsulting.co.uk/graphql',
   cache: new InMemoryCache(),
 });
+
+// const client = new ApolloClient({
+//   uri: 'http://localhost:8080/graphql',
+//   cache: new InMemoryCache(),
+// });
 
 ReactDOM.render(
   <React.StrictMode>
