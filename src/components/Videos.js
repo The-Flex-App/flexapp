@@ -10,6 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import AddVideo from './AddVideo';
+import ReactPlayer from 'react-player';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,11 +35,19 @@ const VIDEOS = gql`
 `;
 
 const renderVideo = (data) => {
-  const { video, id } = data;
+  const { video, id, title } = data;
+  const url = `https://dggim6px82ot4.cloudfront.net/${video}`;
 
   return (
     <ListItem key={id}>
-      <ListItemText primary={video} />
+      <Grid container>
+        <Grid item>
+          <ReactPlayer url={url} />
+        </Grid>
+        <Grid item>
+          <ListItemText primary={title} />
+        </Grid>
+      </Grid>
     </ListItem>
   );
 };
