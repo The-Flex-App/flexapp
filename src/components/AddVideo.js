@@ -79,13 +79,12 @@ export default function AddVideo(props) {
 
   const handleConfirm = async () => {
     try {
-      const { duration, thumbnailBlob, videoBlob } = recordingData;
+      const { duration, videoBlob } = recordingData;
 
       if (!videoBlob) {
         return;
       }
 
-      const thumbnail = blobToFile(thumbnailBlob);
       const video = blobToFile(videoBlob);
 
       const saveVideo = async (videoInput) => {
@@ -107,20 +106,14 @@ export default function AddVideo(props) {
         const videoKey = res.form.fields.key;
 
         uploadFileToS3(res.form, video).then(() => {
-          getSignedUrl(thumbnail.name, 'thumbnail').then((tres) => {
-            const thumbKey = tres.form.fields.key;
-            const videoInput = {
-              projectId: parseInt(projectId, 10),
-              duration,
-              title: videoTitle,
-              thumbnail: thumbKey,
-              video: videoKey,
-            };
+          const videoInput = {
+            projectId: parseInt(projectId, 10),
+            duration,
+            title: videoTitle,
+            video: videoKey,
+          };
 
-            uploadFileToS3(tres.form, video).then(() => {
-              saveVideo(videoInput);
-            });
-          });
+          saveVideo(videoInput);
         });
       });
     } catch (e) {
@@ -154,6 +147,7 @@ export default function AddVideo(props) {
             fullWidth
             onChange={handleInputChange}
             variant="outlined"
+            style={{ marginBottom: '15px' }}
           />
           <VideoRecorder
             timeLimit={30000}

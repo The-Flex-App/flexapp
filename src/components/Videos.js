@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { connect } from 'react-redux';
 import { useQuery, gql } from '@apollo/client';
@@ -11,18 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import AddVideo from './AddVideo';
 import ReactPlayer from 'react-player';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
+import Divider from '@material-ui/core/Divider';
 
 const VIDEOS = gql`
   query GetVideos($projectId: Int) {
@@ -30,6 +18,7 @@ const VIDEOS = gql`
       id
       video
       thumbnail
+      title
     }
   }
 `;
@@ -39,16 +28,31 @@ const renderVideo = (data) => {
   const url = `https://dggim6px82ot4.cloudfront.net/${video}`;
 
   return (
-    <ListItem key={id}>
-      <Grid container>
-        <Grid item>
-          <ReactPlayer url={url} />
+    <>
+      <ListItem key={id}>
+        <Grid container direction="row" justify="flex-start" alignItems="center" spacing={3}>
+          <Grid item className="video-playback-container" xs={4}>
+            <ReactPlayer
+              url={url}
+              controls
+              width="100%"
+              height="100%"
+              config={{
+                file: {
+                  attributes: {
+                    style: { height: '100%', objectFit: 'cover' },
+                  },
+                },
+              }}
+            />
+          </Grid>
+          <Grid item xs={8}>
+            <ListItemText primary={title} />
+          </Grid>
         </Grid>
-        <Grid item>
-          <ListItemText primary={title} />
-        </Grid>
-      </Grid>
-    </ListItem>
+      </ListItem>
+      <Divider />
+    </>
   );
 };
 
@@ -67,7 +71,6 @@ const renderNoUpdates = () => {
 };
 
 function Videos({ selectedProject = {} }) {
-  const classes = useStyles();
   const { id = 0 } = selectedProject;
   const { loading, error, data } = useQuery(VIDEOS, {
     variables: { projectId: parseInt(id, 10) },
@@ -97,9 +100,7 @@ function Videos({ selectedProject = {} }) {
     <>
       <Grid container alignItems="center">
         <Grid item>
-          <Typography variant="h5" className={classes.title}>
-            Updates
-          </Typography>
+          <Typography variant="h5">Updates</Typography>
         </Grid>
         <Grid item>
           <IconButton aria-label="add" color="primary" onClick={handleAddVideo}>
