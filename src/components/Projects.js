@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -23,20 +22,7 @@ const PROJECTS = gql`
   }
 `;
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
-
 function Projects({ setSelectedProject }) {
-  const classes = useStyles();
   const { loading, error, data } = useQuery(PROJECTS);
 
   const [openModal, setOpenModal] = React.useState(false);
@@ -89,10 +75,8 @@ function Projects({ setSelectedProject }) {
   return (
     <>
       <Grid container alignItems="center">
-        <Grid item>
-          <Typography variant="h5" className={classes.title}>
-            Projects
-          </Typography>
+        <Grid item className="page-title">
+          <Typography variant="h5">Projects</Typography>
         </Grid>
         <Grid item>
           <IconButton aria-label="add" color="primary" onClick={handleAddProject}>

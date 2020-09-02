@@ -14,7 +14,7 @@ import Divider from '@material-ui/core/Divider';
 
 const VIDEOS = gql`
   query GetVideos($projectId: Int) {
-    videosByProject(projectId: $projectId) {
+    videosByProject(projectId: $projectId, orderBy: { field: "createdAt", direction: desc }) {
       id
       video
       thumbnail
@@ -81,8 +81,6 @@ function Videos({ selectedProject = {} }) {
   if (error) return `Error! ${error.message}`;
 
   const renderButton = () => {
-    if (id === 0) return null;
-
     return <AddIcon />;
   };
 
@@ -99,11 +97,11 @@ function Videos({ selectedProject = {} }) {
   return (
     <>
       <Grid container alignItems="center">
-        <Grid item>
+        <Grid item className="page-title">
           <Typography variant="h5">Updates</Typography>
         </Grid>
         <Grid item>
-          <IconButton aria-label="add" color="primary" onClick={handleAddVideo}>
+          <IconButton aria-label="add" color="primary" onClick={handleAddVideo} disabled={id === 0}>
             {renderButton()}
           </IconButton>
         </Grid>
