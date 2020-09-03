@@ -150,7 +150,7 @@ export default function AddVideo(props) {
             style={{ marginBottom: '15px' }}
           />
           <VideoRecorder
-            timeLimit={30000}
+            timeLimit={120000}
             showReplayControls={true}
             replayVideoAutoplayAndLoopOff={true}
             onTurnOnCamera={handleCameraTurnOn}
