@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 export default function ButtonAppBar() {
   return (
     <div>
-      <AppBar position="static">
+      <AppBar position="static" color="secondary">
         <Toolbar>
           <Typography variant="h6">Name/Logo goes here</Typography>
         </Toolbar>
