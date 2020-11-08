@@ -13,8 +13,8 @@
     },
     "categories": {
       "auth": {
-        "projectflex4f4af5b2": {
-          "hostedUIProviderCreds": "[]"
+        "projectflex4f0a1a81": {
+          "hostedUIProviderCreds": "[{\"ProviderName\":\"Google\",\"client_id\":\"812957620541-ea9mak245pm437uheokbtdp9i3eu633i.apps.googleusercontent.com\",\"client_secret\":\"BkLhsnqAr4CnrFGIVcy1hD4j\"}]"
         }
       }
     }

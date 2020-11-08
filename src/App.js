@@ -1,5 +1,4 @@
 import React from 'react';
-
 import './App.scss';
 import Container from '@material-ui/core/Container';
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -14,8 +13,12 @@ import { Provider } from 'react-redux';
 import store from '../src/store';
 import muiTheme from './muiTheme';
 
-function App() {
+function App(props) {
+  const { authState } = props;
+
   const theme = muiTheme;
+
+  if (authState !== 'signedIn') return null;
 
   return (
     <MuiThemeProvider theme={theme}>

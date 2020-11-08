@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+
+import Amplify from 'aws-amplify';
+import awsConfig from './aws-exports';
+import AppWithAuth from './AppWithAuth';
 
 // const client = new ApolloClient({
 //   uri: 'https://api.anshconsulting.co.uk/graphql',
@@ -14,10 +17,12 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+Amplify.configure(awsConfig);
+
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <AppWithAuth />
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')

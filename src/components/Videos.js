@@ -11,6 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import AddVideo from './AddVideo';
 import ReactPlayer from 'react-player';
 import Divider from '@material-ui/core/Divider';
+import { selectedProjectSelector } from '../store/slices/projects';
 
 const VIDEOS = gql`
   query GetVideos($projectId: Int) {
@@ -115,7 +116,7 @@ function Videos({ selectedProject = {} }) {
 
 const mapStateToProps = (state) => {
   return {
-    selectedProject: state.selectedProject.selectedProject,
+    selectedProject: selectedProjectSelector(state),
   };
 };
 

@@ -10,7 +10,7 @@ import AddProject from './AddProject';
 import { useQuery, gql } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
-import { setSelectedProject } from '../store/actions.js';
+import { setSelectedProject } from '../store/slices/projects';
 
 const PROJECTS = gql`
   query GetProjects {
@@ -91,9 +91,10 @@ function Projects({ setSelectedProject }) {
   );
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = () => {
   return {};
 };
+
 export default connect(mapStateToProps, {
   setSelectedProject: setSelectedProject,
 })(Projects);

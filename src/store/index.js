@@ -1,10 +1,8 @@
-import { createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import projectReducer from './slices/projects';
 
-import reducer from './reducer';
-import initialState from './initialState';
-
-const store = createStore(reducer, initialState);
-
-window.store = store;
-
-export default store;
+export default configureStore({
+  reducer: {
+    projects: projectReducer,
+  },
+});

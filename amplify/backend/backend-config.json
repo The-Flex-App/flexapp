@@ -1,6 +1,6 @@
 {
   "auth": {
-    "projectflex4f4af5b2": {
+    "projectflex4f0a1a81": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
