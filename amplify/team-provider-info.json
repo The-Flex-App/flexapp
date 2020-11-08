@@ -1,0 +1,22 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-projectflex-dev-134935-authRole",
+      "UnauthRoleArn": "arn:aws:iam::262565110104:role/amplify-projectflex-dev-134935-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::262565110104:role/amplify-projectflex-dev-134935-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-projectflex-dev-134935-deployment",
+      "UnauthRoleName": "amplify-projectflex-dev-134935-unauthRole",
+      "StackName": "amplify-projectflex-dev-134935",
+      "StackId": "arn:aws:cloudformation:eu-west-2:262565110104:stack/amplify-projectflex-dev-134935/6a14bf40-1ddb-11eb-bc17-0283d9cf08b8",
+      "AmplifyAppId": "d39y648ohc2jrz"
+    },
+    "categories": {
+      "auth": {
+        "projectflex4f4af5b2": {
+          "hostedUIProviderCreds": "[]"
+        }
+      }
+    }
+  }
+}
