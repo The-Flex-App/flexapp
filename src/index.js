@@ -4,8 +4,9 @@ import * as serviceWorker from './serviceWorker';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 import Amplify from 'aws-amplify';
-import awsConfig from './aws-exports';
-import AppWithAuth from './AppWithAuth';
+// import awsConfig from './aws-exports';
+// import AppWithAuth from './AppWithAuth';
+import App from './App';
 
 const API_ENDPOINT = process.env.API_ENDPOINT;
 
@@ -14,12 +15,12 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-Amplify.configure(awsConfig);
+// Amplify.configure(awsConfig);
 
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <AppWithAuth />
+      <App />
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
