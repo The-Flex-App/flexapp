@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
-import Amplify from 'aws-amplify';
+// import Amplify from 'aws-amplify';
 // import awsConfig from './aws-exports';
 // import AppWithAuth from './AppWithAuth';
 import App from './App';
