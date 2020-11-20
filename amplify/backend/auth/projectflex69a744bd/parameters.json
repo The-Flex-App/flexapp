@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "projectflex4f0a1a81_identitypool_0f7d362e",
+    "identityPoolName": "projectflex69a744bd_identitypool_69a744bd",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "projec4f0a1a81",
-    "userPoolName": "projectflex4f0a1a81_userpool_4f0a1a81",
+    "resourceNameTruncated": "projec69a744bd",
+    "userPoolName": "projectflex69a744bd_userpool_69a744bd",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -23,17 +23,15 @@
     "userpoolClientGenerateSecret": true,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [
-        "name",
         "email"
     ],
     "userpoolClientReadAttributes": [
-        "email",
-        "name"
+        "email"
     ],
-    "userpoolClientLambdaRole": "projec4f0a1a81_userpoolclient_lambda_role",
-    "userpoolClientSetAttributes": true,
-    "sharedId": "4f0a1a81",
-    "resourceName": "projectflex4f0a1a81",
+    "userpoolClientLambdaRole": "projec69a744bd_userpoolclient_lambda_role",
+    "userpoolClientSetAttributes": false,
+    "sharedId": "69a744bd",
+    "resourceName": "projectflex69a744bd",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -49,23 +47,14 @@
     },
     "useDefault": "defaultSocial",
     "hostedUI": true,
-    "usernameAttributes": [
-        "email"
-    ],
-    "hostedUIDomainName": "projectflex4f0a1a81-4f0a1a81",
+    "hostedUIDomainName": "flexapp",
     "authProvidersUserPool": [
+        "Facebook",
         "Google"
     ],
-    "hostedUIProviderMeta": "[{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}}]",
+    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}}]",
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "dependsOn": [],
-    "userPoolGroups": false,
-    "adminQueries": false,
-    "triggers": "{}",
-    "parentStack": {
-        "Ref": "AWS::StackId"
-    },
-    "permissions": [],
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\"],\"LogoutURLs\":[\"http://localhost:3000/logout/\"]}"
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\"],\"LogoutURLs\":[\"http://localhost:3000/\"]}"
 }

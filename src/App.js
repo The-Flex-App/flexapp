@@ -13,12 +13,8 @@ import { Provider } from 'react-redux';
 import store from '../src/store';
 import muiTheme from './muiTheme';
 
-function App(props) {
-  const { authState } = props;
-
+function App() {
   const theme = muiTheme;
-
-  if (authState !== 'signedIn') return null;
 
   return (
     <MuiThemeProvider theme={theme}>

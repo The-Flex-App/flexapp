@@ -13,8 +13,8 @@
     },
     "categories": {
       "auth": {
-        "projectflex4f0a1a81": {
-          "hostedUIProviderCreds": "[{\"ProviderName\":\"Google\",\"client_id\":\"812957620541-ea9mak245pm437uheokbtdp9i3eu633i.apps.googleusercontent.com\",\"client_secret\":\"BkLhsnqAr4CnrFGIVcy1hD4j\"}]"
+        "projectflex69a744bd": {
+          "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"1318557628490865\",\"client_secret\":\"48f90bb1283b2f4454103f0a37740786\"},{\"ProviderName\":\"Google\",\"client_id\":\"812957620541-ea9mak245pm437uheokbtdp9i3eu633i.apps.googleusercontent.com\",\"client_secret\":\"BkLhsnqAr4CnrFGIVcy1hD4j\"}]"
         }
       }
     }

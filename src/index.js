@@ -7,13 +7,10 @@ import Amplify from 'aws-amplify';
 import awsConfig from './aws-exports';
 import AppWithAuth from './AppWithAuth';
 
-// const client = new ApolloClient({
-//   uri: 'https://api.anshconsulting.co.uk/graphql',
-//   cache: new InMemoryCache(),
-// });
+const API_ENDPOINT = process.env.API_ENDPOINT;
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/graphql',
+  uri: API_ENDPOINT,
   cache: new InMemoryCache(),
 });
 
