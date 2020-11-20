@@ -26,7 +26,7 @@ const getSignedUrl = (fileName, fileType = 'video') => {
     fileType,
   };
 
-  return fetch('https://api.anshconsulting.co.uk/signed-url-put-object?' + new URLSearchParams(opts), {})
+  return fetch(`${process.env.REACT_APP_API_ENDPOINT}/signed-url?` + new URLSearchParams(opts), {})
     .then(function (response) {
       return response.json();
     })

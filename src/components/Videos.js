@@ -26,7 +26,7 @@ const VIDEOS = gql`
 
 const renderVideo = (data) => {
   const { video, id, title } = data;
-  const url = `https://dggim6px82ot4.cloudfront.net/${video}`;
+  const url = `${process.env.REACT_APP_MEDIA_URL}/${video}`;
 
   return (
     <>

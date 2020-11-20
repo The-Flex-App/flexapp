@@ -8,9 +8,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 // import AppWithAuth from './AppWithAuth';
 import App from './App';
 
-const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-
-console.log(API_ENDPOINT);
+const API_ENDPOINT = process.env.REACT_APP_GRAPHQL_API;
 
 const client = new ApolloClient({
   uri: API_ENDPOINT,
