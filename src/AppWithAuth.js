@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Auth, Hub } from 'aws-amplify';
 import queryString from 'query-string';
 import useAuthentication from './utils/useAuthentication';
