@@ -4,7 +4,7 @@ import Container from '@material-ui/core/Container';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import ButtonAppBar from './components/ButtonAppBar';
+import ButtonAppBar from './components/header/ButtonAppBar';
 import Projects from './components/Projects';
 import Copyright from './components/Copyright';
 import Videos from './components/Videos';

@@ -1,28 +1,48 @@
-import { Authenticator } from 'aws-amplify-react';
-import React from 'react';
-import '@aws-amplify/ui/dist/style.css';
-import AuthWrapper from './components/auth/AuthWrapper';
+import React, { useEffect, useState } from 'react';
+import { Auth, Hub } from 'aws-amplify';
+import queryString from 'query-string';
+import useAuthentication from './utils/useAuthentication';
+import { UserProvider } from './utils/userContext';
+import App from './App';
 
-const federated = {
-  google_client_id: '812957620541-ea9mak245pm437uheokbtdp9i3eu633i.apps.googleusercontent.com',
-  facebook_app_id: '1318557628490865',
-};
+// https://aws-amplify.github.io/docs/js/hub
+Hub.listen(/.*/, ({ channel, payload }) => console.debug(`[hub::${channel}::${payload.event}]`, payload));
 
-const theme = {
-  signInButtonIcon: { display: 'none' },
-};
+// https://aws-amplify.github.io/docs/js/authentication#manual-setup
+Auth.configure({
+  region: process.env.REACT_APP_AUTH_REGION,
+  userPoolId: process.env.REACT_APP_AUTH_USER_POOL_ID,
+  userPoolWebClientId: process.env.REACT_APP_AUTH_USER_POOL_CLIENT_ID,
 
-const signUpConfig = {
-  hiddenDefaults: ['phone_number'],
-  signUpFields: [{ label: 'Name', key: 'name', required: true, type: 'string', displayOrer: 1 }],
-};
+  // Cognito Hosted UI configuration
+  oauth: {
+    domain: process.env.REACT_APP_AUTH_DOMAIN,
+    scope: ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'],
+    redirectSignIn: `${document.location.origin}/`,
+    redirectSignOut: `${document.location.origin}/`,
+    responseType: 'code',
+  },
+});
 
 const AppWithAuth = () => {
-  return (
-    <Authenticator federated={federated} theme={theme} signUpConfig={signUpConfig}>
-      <AuthWrapper />
-    </Authenticator>
-  );
+  const { isAuthenticated, isLoading, user, signIn, signOut, ready } = useAuthentication();
+  const parsed = queryString.parse(document.location.search);
+
+  useEffect(() => {
+    if (!ready && !isLoading && !isAuthenticated && !user) {
+      signIn();
+    }
+  }, [isLoading, isAuthenticated, signIn, parsed, user, ready]);
+
+  if (ready && isAuthenticated) {
+    return (
+      <UserProvider value={{ signOut, user }}>
+        <App />
+      </UserProvider>
+    );
+  }
+
+  return null;
 };
 
 export default AppWithAuth;
