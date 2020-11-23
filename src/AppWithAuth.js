@@ -16,7 +16,7 @@ Auth.configure({
 
   // Cognito Hosted UI configuration
   oauth: {
-    domain: process.env.REACT_APP_AUTH_DOMAIN,
+    domain: process.env.REACT_APP_LOGIN_DOMAIN,
     scope: ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'],
     redirectSignIn: `${document.location.origin}/`,
     redirectSignOut: `${document.location.origin}/`,
