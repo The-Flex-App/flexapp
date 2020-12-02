@@ -7,20 +7,11 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import AddProject from './AddProject';
 
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
-import { setSelectedProject } from '../store/slices/projects';
-
-const PROJECTS = gql`
-  query GetProjects {
-    projects {
-      id
-      title
-      description
-    }
-  }
-`;
+import { setSelectedProject } from '../../store/slices/projects';
+import { PROJECTS } from '../../graphql/queries'
 
 function Projects({ setSelectedProject }) {
   const { loading, error, data } = useQuery(PROJECTS);

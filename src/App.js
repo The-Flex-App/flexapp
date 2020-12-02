@@ -5,12 +5,9 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import ButtonAppBar from './components/header/ButtonAppBar';
-import Projects from './components/Projects';
+import Projects from './components/projects/Projects';
 import Copyright from './components/Copyright';
-import Videos from './components/Videos';
-
-import { Provider } from 'react-redux';
-import store from '../src/store';
+import Videos from './components/videos/Videos';
 import muiTheme from './muiTheme';
 
 function App() {
@@ -18,7 +15,6 @@ function App() {
 
   return (
     <MuiThemeProvider theme={theme}>
-      <Provider store={store}>
         <Container maxWidth={false}>
           <Grid container>
             <Grid item xs={12}>
@@ -37,7 +33,6 @@ function App() {
             </Paper>
           </Grid>
         </Container>
-      </Provider>
     </MuiThemeProvider>
   );
 }

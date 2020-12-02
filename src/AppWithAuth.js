@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
-import queryString from 'query-string';
 import useAuthentication from './utils/useAuthentication';
 import { UserProvider } from './utils/userContext';
+import { setUser } from './store/slices/user';
 import App from './App';
 
 // https://aws-amplify.github.io/docs/js/hub
@@ -26,13 +27,17 @@ Auth.configure({
 
 const AppWithAuth = () => {
   const { isAuthenticated, isLoading, user, signIn, signOut, ready } = useAuthentication();
-  const parsed = queryString.parse(document.location.search);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!ready && !isLoading && !isAuthenticated && !user) {
       signIn();
+    } else {
+      if(user){
+        dispatch(setUser(user));
+      }
     }
-  }, [isLoading, isAuthenticated, signIn, parsed, user, ready]);
+  }, [isLoading, isAuthenticated, signIn, user, ready, dispatch]);
 
   if (ready && isAuthenticated) {
     return (
