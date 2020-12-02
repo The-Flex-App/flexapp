@@ -8,7 +8,7 @@ import { useMutation } from '@apollo/client';
 import VideoRecorder from 'react-video-recorder';
 import TextField from '@material-ui/core/TextField';
 import { v4 as uuidv4 } from 'uuid';
-import { ADD_VIDEO } from '../../mutation'
+import { ADD_VIDEO } from '../../graphql/mutations'
 
 const getSignedUrl = (fileName, fileType = 'video') => {
   const opts = {

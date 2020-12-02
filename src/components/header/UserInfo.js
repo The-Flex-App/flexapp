@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
 export default function UserInfo() {
-  const { user, signOut } = useContext(UserContext);
+  const { signOut } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 

@@ -12,7 +12,7 @@ import AddVideo from './AddVideo';
 import ReactPlayer from 'react-player';
 import Divider from '@material-ui/core/Divider';
 import { selectedProjectSelector } from '../../store/slices/projects';
-import { VIDEOS } from '../../mutation'
+import { VIDEOS } from '../../graphql/queries'
 
 const renderVideo = (data) => {
   const { video, id, title } = data;
@@ -83,7 +83,7 @@ function Videos({ selectedProject = {} }) {
     setOpenModal(false);
   };
 
-  const handleConfirm = () => { };
+  const handleConfirm = () => {};
 
   return (
     <>

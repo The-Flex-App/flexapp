@@ -11,7 +11,7 @@ import { useQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { setSelectedProject } from '../../store/slices/projects';
-import { PROJECTS } from '../../mutation'
+import { PROJECTS } from '../../graphql/queries'
 
 function Projects({ setSelectedProject }) {
   const { loading, error, data } = useQuery(PROJECTS);

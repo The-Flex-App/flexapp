@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
-import queryString from 'query-string';
 import useAuthentication from './utils/useAuthentication';
 import { UserProvider } from './utils/userContext';
 import { setUser } from './store/slices/user';
@@ -29,7 +28,6 @@ Auth.configure({
 const AppWithAuth = () => {
   const { isAuthenticated, isLoading, user, signIn, signOut, ready } = useAuthentication();
   const dispatch = useDispatch();
-  const parsed = queryString.parse(document.location.search);
 
   useEffect(() => {
     if (!ready && !isLoading && !isAuthenticated && !user) {
@@ -39,7 +37,7 @@ const AppWithAuth = () => {
         dispatch(setUser(user));
       }
     }
-  }, [isLoading, isAuthenticated, signIn, parsed, user, ready]);
+  }, [isLoading, isAuthenticated, signIn, user, ready, dispatch]);
 
   if (ready && isAuthenticated) {
     return (
