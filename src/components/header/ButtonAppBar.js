@@ -23,7 +23,7 @@ export default function ButtonAppBar() {
           <Typography variant="h6" className={classes.title}>
             FlexApp
           </Typography>
-          <UserInfo />
+          <UserInfo/>
         </Toolbar>
       </AppBar>
     </div>

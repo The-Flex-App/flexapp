@@ -22,8 +22,6 @@ export default function UserInfo() {
     setAnchorEl(null);
   };
 
-  console.log(user);
-
   return (
     <div>
       <IconButton

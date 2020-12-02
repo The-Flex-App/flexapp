@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { connect } from 'react-redux';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -11,18 +11,8 @@ import AddIcon from '@material-ui/icons/Add';
 import AddVideo from './AddVideo';
 import ReactPlayer from 'react-player';
 import Divider from '@material-ui/core/Divider';
-import { selectedProjectSelector } from '../store/slices/projects';
-
-const VIDEOS = gql`
-  query GetVideos($projectId: Int) {
-    videosByProject(projectId: $projectId, orderBy: { field: "createdAt", direction: desc }) {
-      id
-      video
-      thumbnail
-      title
-    }
-  }
-`;
+import { selectedProjectSelector } from '../../store/slices/projects';
+import { VIDEOS } from '../../mutation'
 
 const renderVideo = (data) => {
   const { video, id, title } = data;
@@ -93,7 +83,7 @@ function Videos({ selectedProject = {} }) {
     setOpenModal(false);
   };
 
-  const handleConfirm = () => {};
+  const handleConfirm = () => { };
 
   return (
     <>

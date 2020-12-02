@@ -5,16 +5,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { ADD_PROJECT } from '../../mutation'
 
-const ADD_PROJECT = gql`
-  mutation CreateProject($input: ProjectInput!) {
-    createProject(input: $input) {
-      id
-      title
-    }
-  }
-`;
 export default function AddProject(props) {
   const { open, onClose } = props;
   const [newProject, setNewProject] = React.useState(false);

@@ -4,21 +4,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import VideoRecorder from 'react-video-recorder';
 import TextField from '@material-ui/core/TextField';
 import { v4 as uuidv4 } from 'uuid';
-
-const ADD_VIDEO = gql`
-  mutation CreateVideo($input: VideoInput!) {
-    createVideo(input: $input) {
-      thumbnail
-      duration
-      video
-      projectId
-    }
-  }
-`;
+import { ADD_VIDEO } from '../../mutation'
 
 const getSignedUrl = (fileName, fileType = 'video') => {
   const opts = {
