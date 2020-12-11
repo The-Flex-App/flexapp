@@ -151,11 +151,12 @@ export default function UserInfo() {
 	});
 	const [addInvite] = useMutation(ADD_INVITE);
 
+	// eslint-disable-next-line no-unused-vars
 	const { signOut } = useContext(UserContext);
 
-	const handleLogout = () => {
-		signOut();
-	};
+	// const handleLogout = () => {
+	// 	signOut();
+	// };
 
 	const handleCopyToClipboard = () => {
 		addInvite({
