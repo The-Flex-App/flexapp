@@ -11,7 +11,7 @@ import { useQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { setSelectedProject } from '../../store/slices/projects';
-import { PROJECTS } from '../../graphql/queries'
+import { PROJECTS } from '../../graphql/queries';
 
 function Projects({ setSelectedProject }) {
   const { loading, error, data } = useQuery(PROJECTS);
@@ -42,7 +42,11 @@ function Projects({ setSelectedProject }) {
 
     return (
       <React.Fragment key={id}>
-        <ListItem button onClick={() => handleProjectSelected(project)} selected={id === selection}>
+        <ListItem
+          button
+          onClick={() => handleProjectSelected(project)}
+          selected={id === selection}
+        >
           <ListItemText primary={title} />
         </ListItem>
         <Divider />
@@ -54,7 +58,7 @@ function Projects({ setSelectedProject }) {
     const length = data.length;
 
     if (length === 0) {
-      return <Typography variant="body2">No projects found</Typography>;
+      return <Typography variant='body2'>No projects found</Typography>;
     }
 
     return <List>{data.map((project) => renderProject(project))}</List>;
@@ -65,19 +69,27 @@ function Projects({ setSelectedProject }) {
 
   return (
     <>
-      <Grid container alignItems="center">
-        <Grid item className="page-title">
-          <Typography variant="h5">Projects</Typography>
+      <Grid container alignItems='center'>
+        <Grid item className='page-title'>
+          <Typography variant='h5'>Projects</Typography>
         </Grid>
         <Grid item>
-          <IconButton aria-label="add" color="primary" onClick={handleAddProject}>
+          <IconButton
+            aria-label='add'
+            color='primary'
+            onClick={handleAddProject}
+          >
             <AddIcon />
           </IconButton>
         </Grid>
       </Grid>
 
       {renderProjects(data.projects)}
-      <AddProject open={openModal} onClose={handleClose} onConfirm={handleConfirm} />
+      <AddProject
+        open={openModal}
+        onClose={handleClose}
+        onConfirm={handleConfirm}
+      />
     </>
   );
 }

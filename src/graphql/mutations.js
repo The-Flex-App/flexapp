@@ -20,4 +20,35 @@ const ADD_VIDEO = gql`
   }
 `;
 
-export { ADD_PROJECT, ADD_VIDEO }
+const ADD_USER = gql`
+  mutation CreateUser($input: UserInput) {
+    createUser(input: $input) {
+      firstName
+      lastName
+      email
+      workspaceId
+      memberWorkspaceInfo {
+        firstName
+        lastName
+        email
+        workspaceId
+      }
+      ownerWorkspaceInfo {
+        firstName
+        lastName
+        email
+        role
+      }
+    }
+  }
+`;
+
+const ADD_INVITE = gql`
+  mutation CreateInvitaton($input: InvitationInput) {
+    createInvitaton(input: $input) {
+      id
+    }
+  }
+`;
+
+export { ADD_PROJECT, ADD_VIDEO, ADD_USER, ADD_INVITE };

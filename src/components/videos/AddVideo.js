@@ -8,7 +8,7 @@ import { useMutation } from '@apollo/client';
 import VideoRecorder from 'react-video-recorder';
 import TextField from '@material-ui/core/TextField';
 import { v4 as uuidv4 } from 'uuid';
-import { ADD_VIDEO } from '../../graphql/mutations'
+import { ADD_VIDEO } from '../../graphql/mutations';
 
 const getSignedUrl = (fileName, fileType = 'video') => {
   const opts = {
@@ -16,7 +16,11 @@ const getSignedUrl = (fileName, fileType = 'video') => {
     fileType,
   };
 
-  return fetch(`${process.env.REACT_APP_API_ENDPOINT}/signed-url?` + new URLSearchParams(opts), {})
+  return fetch(
+    `${process.env.REACT_APP_API_ENDPOINT}/signed-url?` +
+      new URLSearchParams(opts),
+    {}
+  )
     .then(function (response) {
       return response.json();
     })
@@ -45,7 +49,10 @@ export default function AddVideo(props) {
     const fileType = theBlob.type;
     const fileExtension = fileType.split('/')[1].split(';')[0];
     const name = fileName || `${uuidv4()}.${fileExtension}`;
-    return new File([theBlob], name, { lastModified: new Date().getTime(), type: theBlob.type });
+    return new File([theBlob], name, {
+      lastModified: new Date().getTime(),
+      type: theBlob.type,
+    });
   };
 
   const uploadFileToS3 = (presignedPostData, file) => {
@@ -125,18 +132,23 @@ export default function AddVideo(props) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
-        <DialogTitle id="form-dialog-title">Add an update</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='form-dialog-title'
+        fullWidth
+      >
+        <DialogTitle id='form-dialog-title'>Add an update</DialogTitle>
         <DialogContent>
           {renderErrors()}
           <TextField
             autoFocus
-            margin="dense"
-            id="name"
-            label="Video description"
+            margin='dense'
+            id='name'
+            label='Video description'
             fullWidth
             onChange={handleInputChange}
-            variant="outlined"
+            variant='outlined'
             style={{ marginBottom: '15px' }}
           />
           <VideoRecorder
@@ -144,17 +156,33 @@ export default function AddVideo(props) {
             showReplayControls={true}
             replayVideoAutoplayAndLoopOff={true}
             onTurnOnCamera={handleCameraTurnOn}
-            onRecordingComplete={(videoBlob, startedAt, thumbnailBlob, duration) => {
+            onRecordingComplete={(
+              videoBlob,
+              startedAt,
+              thumbnailBlob,
+              duration
+            ) => {
               // Do something with the video...
-              setRecordingData({ videoBlob, startedAt, duration, thumbnailBlob });
+              setRecordingData({
+                videoBlob,
+                startedAt,
+                duration,
+                thumbnailBlob,
+              });
             }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color='primary'>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} color="primary" type="button" variant="contained" disabled={!videoBlob}>
+          <Button
+            onClick={handleConfirm}
+            color='primary'
+            type='button'
+            variant='contained'
+            disabled={!videoBlob}
+          >
             Add Video
           </Button>
         </DialogActions>

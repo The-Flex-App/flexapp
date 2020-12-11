@@ -12,7 +12,10 @@ const PROJECTS = gql`
 
 const VIDEOS = gql`
   query GetVideos($projectId: Int) {
-    videosByProject(projectId: $projectId, orderBy: { field: "createdAt", direction: desc }) {
+    videosByProject(
+      projectId: $projectId
+      orderBy: { field: "createdAt", direction: desc }
+    ) {
       id
       video
       thumbnail
@@ -21,4 +24,17 @@ const VIDEOS = gql`
   }
 `;
 
-export { PROJECTS, VIDEOS }
+const USERINFO = gql`
+  query GetUserInfo {
+    getUserInfo {
+      id
+      userName
+      email
+      firstName
+      lastName
+      role
+    }
+  }
+`;
+
+export { PROJECTS, VIDEOS, USERINFO };

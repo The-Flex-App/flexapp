@@ -15,24 +15,24 @@ function App() {
 
   return (
     <MuiThemeProvider theme={theme}>
-        <Container maxWidth={false}>
-          <Grid container>
-            <Grid item xs={12}>
-              <ButtonAppBar />
-            </Grid>
-            <Grid item xs={3} className="project-list">
-              <Projects />
-            </Grid>
-            <Grid item xs={9} className="videos-list">
-              <Videos />
-            </Grid>
-          </Grid>
+      <Container maxWidth={false}>
+        <Grid container>
           <Grid item xs={12}>
-            <Paper>
-              <Copyright />
-            </Paper>
+            <ButtonAppBar />
           </Grid>
-        </Container>
+          <Grid item xs={3} className='project-list'>
+            <Projects />
+          </Grid>
+          <Grid item xs={9} className='videos-list'>
+            <Videos />
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper>
+            <Copyright />
+          </Paper>
+        </Grid>
+      </Container>
     </MuiThemeProvider>
   );
 }
