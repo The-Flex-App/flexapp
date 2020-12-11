@@ -1,33 +1,47 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import UserContext from '../../utils/userContext';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { deepOrange } from '@material-ui/core/colors';
 import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import Link from '@material-ui/core/Link';
 import LinkIcon from '@material-ui/icons/Link';
 import { useSelector } from 'react-redux';
-import { ADD_INVITE } from '../../graphql/mutations';
 import { useMutation } from '@apollo/client';
+import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { copyToClipboard } from '../../utils/misc';
+import { ADD_INVITE } from '../../graphql/mutations';
+import Menu from './Menu';
 
 const useStyles = makeStyles((theme) => ({
+	settingButtonRoot: {
+		padding: 8
+	},
 	buttonRoot: {
-		padding: 0
+		padding: 0,
+		marginLeft: 10,
+		marginRight: 10
 	},
 	accountCircleRoot: {
 		fontSize: 40
 	},
 	menuPaper: {
-		padding: 0
+		padding: 0,
+		marginTop: 15
 	},
 	menuItemRoot: {
 		display: 'flex',
 		justifyContent: 'space-between'
+	},
+	memberMenuItemRoot: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		cursor: 'default',
+		'&:hover': {
+			backgroundColor: 'transparent'
+		}
 	},
 	square: {
 		color: theme.palette.getContrastText(deepOrange[500]),
@@ -99,7 +113,7 @@ const getMemberMenuItem = (data, classes, index) => {
 	const handleRemoveMember = () => {};
 
 	return (
-		<MenuItem key={index} classes={{ root: classes.menuItemRoot }}>
+		<MenuItem key={index} classes={{ root: classes.memberMenuItemRoot }}>
 			<div className={classes.link}>
 				<Avatar
 					variant="circular"
@@ -128,7 +142,6 @@ export default function UserInfo() {
 	const {
 		id: userId,
 		workspaceId,
-		isOwner,
 		memberWorkspaceInfo,
 		ownerWorkspaceInfo,
 		firstName,
@@ -139,12 +152,6 @@ export default function UserInfo() {
 	const [addInvite] = useMutation(ADD_INVITE);
 
 	const { signOut } = useContext(UserContext);
-	const [anchorEl, setAnchorEl] = useState(null);
-	const open = Boolean(anchorEl);
-
-	const handleMenu = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
 
 	const handleLogout = () => {
 		signOut();
@@ -155,8 +162,8 @@ export default function UserInfo() {
 			variables: { input: { userId, workspaceId } }
 		})
 			.then((response) => {
-				const { workspaceId, inviteId } = response;
-				const url = `${window.location.origin}/${workspaceId}/${inviteId}`;
+				const { id } = response.data.createInvitaton;
+				const url = `${window.location.origin}/${workspaceId}/${id}`;
 				copyToClipboard(url);
 			})
 			.catch((e) => {
@@ -165,68 +172,59 @@ export default function UserInfo() {
 			});
 	};
 
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-
 	return (
 		<div>
-			<IconButton
-				aria-label="account of current user"
-				aria-controls="menu-appbar"
-				aria-haspopup="true"
-				onClick={handleMenu}
-				color="inherit"
-				classes={{ root: classes.buttonRoot }}
-			>
-				<Avatar
-					variant="square"
-					alt={firstName ? `${firstName} ${lastName}` : ''}
-					src={'./user.png'}
-					className={classes.accountAvatar}
-				/>
-			</IconButton>
 			<Menu
 				id="menu-appbar"
-				classes={{ paper: classes.menuPaper }}
-				anchorEl={anchorEl}
-				getContentAnchorEl={null}
-				anchorOrigin={{
-					vertical: 'bottom',
-					horizontal: 'right'
-				}}
-				keepMounted
-				transformOrigin={{
-					vertical: 'top',
-					horizontal: 'right'
-				}}
-				open={open}
-				onClose={handleClose}
-			>
-				{isOwner
-					? [
-							ownerWorkspaceInfo
-								? ownerWorkspaceInfo.map((workspace, index) =>
-										getMemberMenuItem(workspace, classes, index)
-								  )
-								: null,
-							<MenuItem onClick={handleCopyToClipboard} key={'copy-board-link'}>
-								{' '}
-								<LinkIcon classes={{ root: classes.copylink }} /> Copy board
-								link
-							</MenuItem>
-					  ]
-					: [
-							memberWorkspaceInfo
-								? memberWorkspaceInfo.map((workspace, index) =>
-										getWorkspaceMenuItem(workspace, classes, index)
-								  )
-								: null
-					  ]}
-				<MenuItem key={'logout'} onClick={handleLogout}>
-					<ExitToAppIcon classes={{ root: classes.copylink }} /> Logout
-				</MenuItem>
-			</Menu>
+				trigger={
+					<IconButton
+						aria-label="setting of current user"
+						aria-controls="menu-appbar"
+						aria-haspopup="true"
+						color="inherit"
+						classes={{ root: classes.settingButtonRoot }}
+					>
+						<SettingsRoundedIcon />
+					</IconButton>
+				}
+				menuItems={[
+					...(ownerWorkspaceInfo
+						? ownerWorkspaceInfo.map((workspace, index) =>
+								getMemberMenuItem(workspace, classes, index)
+						  )
+						: []),
+					<MenuItem onClick={handleCopyToClipboard} key={'copy-board-link'}>
+						{' '}
+						<LinkIcon classes={{ root: classes.copylink }} /> Copy board link
+					</MenuItem>
+				]}
+			/>
+			<Menu
+				id="menu-appbar"
+				trigger={
+					<IconButton
+						aria-label="account of current user"
+						aria-controls="menu-appbar"
+						aria-haspopup="true"
+						color="inherit"
+						classes={{ root: classes.buttonRoot }}
+					>
+						<Avatar
+							variant="square"
+							alt={firstName ? `${firstName} ${lastName}` : ''}
+							src={'./user.png'}
+							className={classes.accountAvatar}
+						/>
+					</IconButton>
+				}
+				menuItems={
+					memberWorkspaceInfo
+						? memberWorkspaceInfo.map((workspace, index) =>
+								getWorkspaceMenuItem(workspace, classes, index)
+						  )
+						: []
+				}
+			/>
 		</div>
 	);
 }

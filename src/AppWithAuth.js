@@ -62,9 +62,9 @@ const AppWithAuth = () => {
 			const { userId } = JSON.parse(attributes.identities)[0];
 			const { given_name, family_name, email } = attributes;
 			const userInfo = {
-				id: '222322323' || userId,
+				id: userId,
 				userName: username,
-				email: 'test228@mail.com' || email,
+				email: email,
 				firstName: given_name,
 				lastName: family_name,
 				workspaceId,
@@ -78,7 +78,7 @@ const AppWithAuth = () => {
 					dispatch(
 						setUser({
 							...(response.data.createUser || {}),
-							id: '222322323' || userId,
+							id: userId,
 							isOwner: !workspaceId || response.workspaceId === workspaceId
 						})
 					);

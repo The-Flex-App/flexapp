@@ -46,8 +46,7 @@ const ADD_USER = gql`
 const ADD_INVITE = gql`
 	mutation CreateInvitaton($input: InvitationInput) {
 		createInvitaton(input: $input) {
-			inviteId
-			workspaceId
+			id
 		}
 	}
 `;

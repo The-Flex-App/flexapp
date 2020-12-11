@@ -10,9 +10,17 @@ const useStyles = makeStyles((theme) => ({
 		flexGrow: 1
 	},
 	title: {
-		flexGrow: 1,
+		flexGrow: 1
+	},
+	flexTitle: {
 		fontWeight: 'bold',
-		color: '#414bb2'
+		display: 'inline-block',
+		fontSize: '19pt',
+		padding: '0 15px',
+		background: '#0199ad',
+		height: 40,
+		lineHeight: '40px',
+		color: '#FFF'
 	},
 	appBarRoot: {
 		padding: 0
@@ -30,7 +38,7 @@ export default function ButtonAppBar() {
 			>
 				<Toolbar>
 					<Typography variant="h5" className={classes.title}>
-						Flex
+						<div className={classes.flexTitle}>FLEX</div>
 					</Typography>
 					<UserInfo />
 				</Toolbar>
