@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useMutation } from '@apollo/client';
-import { ADD_PROJECT } from '../../graphql/mutations'
+import { ADD_PROJECT } from '../../graphql/mutations';
 
 export default function AddProject(props) {
   const { open, onClose } = props;
@@ -38,26 +38,36 @@ export default function AddProject(props) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
-        <DialogTitle id="form-dialog-title">Add new project</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='form-dialog-title'
+        fullWidth
+      >
+        <DialogTitle id='form-dialog-title'>Add new project</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
-            margin="dense"
-            id="name"
-            label="Project name"
+            margin='dense'
+            id='name'
+            label='Project name'
             fullWidth
             onChange={handleInputChange}
-            variant="outlined"
+            variant='outlined'
             error={error}
             helperText={error && error.message}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color='primary'>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} color="primary" type="button" variant="contained">
+          <Button
+            onClick={handleConfirm}
+            color='primary'
+            type='button'
+            variant='contained'
+          >
             Add Project
           </Button>
         </DialogActions>

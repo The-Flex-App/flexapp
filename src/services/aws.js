@@ -58,17 +58,29 @@ async function awsCallTokenEndpoint(grantType, accessToken) {
 }
 
 async function getEmailFromCode(code) {
-  const awsAuthorizationCodeResponse = await awsCallTokenEndpoint('authorization_code', code);
+  const awsAuthorizationCodeResponse = await awsCallTokenEndpoint(
+    'authorization_code',
+    code
+  );
 
-  const unverifiedDecodedAuthorizationCodeIdToken = jwt.decode(awsAuthorizationCodeResponse.data.id_token, {
-    complete: true,
-  });
-  const unverifiedDecodedAuthorizationCodeAccessToken = jwt.decode(awsAuthorizationCodeResponse.data.access_token, {
-    complete: true,
-  });
-  const unverifiedDecodedAuthorizationCodeRefreshToken = jwt.decode(awsAuthorizationCodeResponse.data.refresh_token, {
-    complete: true,
-  });
+  const unverifiedDecodedAuthorizationCodeIdToken = jwt.decode(
+    awsAuthorizationCodeResponse.data.id_token,
+    {
+      complete: true,
+    }
+  );
+  const unverifiedDecodedAuthorizationCodeAccessToken = jwt.decode(
+    awsAuthorizationCodeResponse.data.access_token,
+    {
+      complete: true,
+    }
+  );
+  const unverifiedDecodedAuthorizationCodeRefreshToken = jwt.decode(
+    awsAuthorizationCodeResponse.data.refresh_token,
+    {
+      complete: true,
+    }
+  );
 
   debug(
     `AWS oauth2/token authorization code response id_token decoded but inverified: ${JSON.stringify(
@@ -99,8 +111,14 @@ async function getEmailFromCode(code) {
 
   const jwk = await getKey(kid);
   const pem = jwkToPem(jwk);
-  const decodedIdToken = await jwt.verify(awsAuthorizationCodeResponse.data.id_token, pem, { algorithms: ['RS256'] });
-  debug(`Decoded and verified id token from aws ${JSON.stringify(decodedIdToken)}`);
+  const decodedIdToken = await jwt.verify(
+    awsAuthorizationCodeResponse.data.id_token,
+    pem,
+    { algorithms: ['RS256'] }
+  );
+  debug(
+    `Decoded and verified id token from aws ${JSON.stringify(decodedIdToken)}`
+  );
   // Make sure that the profile checkbox is selected in the App client settings in cognito for the app. Otherwise you will get just the email
   const { email } = decodedIdToken;
   const { name } = decodedIdToken;

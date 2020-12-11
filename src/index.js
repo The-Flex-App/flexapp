@@ -9,19 +9,19 @@ import Router from './Router';
 const API_ENDPOINT = process.env.REACT_APP_GRAPHQL_API;
 
 const client = new ApolloClient({
-	uri: API_ENDPOINT,
-	cache: new InMemoryCache()
+  uri: API_ENDPOINT,
+  cache: new InMemoryCache(),
 });
 
 ReactDOM.render(
-	<React.StrictMode>
-		<ApolloProvider client={client}>
-			<Provider store={store}>
-				<Router />
-			</Provider>
-		</ApolloProvider>
-	</React.StrictMode>,
-	document.getElementById('root')
+  <React.StrictMode>
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <Router />
+      </Provider>
+    </ApolloProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change

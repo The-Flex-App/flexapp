@@ -11,93 +11,93 @@ import { useMutation } from '@apollo/client';
 
 // https://aws-amplify.github.io/docs/js/hub
 Hub.listen(/.*/, ({ channel, payload }) =>
-	console.debug(`[hub::${channel}::${payload.event}]`, payload)
+  console.debug(`[hub::${channel}::${payload.event}]`, payload)
 );
 
 // https://aws-amplify.github.io/docs/js/authentication#manual-setup
 Auth.configure({
-	region: process.env.REACT_APP_AUTH_REGION,
-	userPoolId: process.env.REACT_APP_AUTH_USER_POOL_ID,
-	userPoolWebClientId: process.env.REACT_APP_AUTH_USER_POOL_CLIENT_ID,
+  region: process.env.REACT_APP_AUTH_REGION,
+  userPoolId: process.env.REACT_APP_AUTH_USER_POOL_ID,
+  userPoolWebClientId: process.env.REACT_APP_AUTH_USER_POOL_CLIENT_ID,
 
-	// Cognito Hosted UI configuration
-	oauth: {
-		domain: process.env.REACT_APP_LOGIN_DOMAIN,
-		scope: [
-			'phone',
-			'email',
-			'openid',
-			'profile',
-			'aws.cognito.signin.user.admin'
-		],
-		redirectSignIn: `${document.location.origin}/`,
-		redirectSignOut: `${document.location.origin}/`,
-		responseType: 'code'
-	}
+  // Cognito Hosted UI configuration
+  oauth: {
+    domain: process.env.REACT_APP_LOGIN_DOMAIN,
+    scope: [
+      'phone',
+      'email',
+      'openid',
+      'profile',
+      'aws.cognito.signin.user.admin',
+    ],
+    redirectSignIn: `${document.location.origin}/`,
+    redirectSignOut: `${document.location.origin}/`,
+    responseType: 'code',
+  },
 });
 
 const AppWithAuth = () => {
-	const { workspaceId, inviteId } = useParams();
-	const history = useHistory();
-	const [addUser] = useMutation(ADD_USER);
-	const {
-		isAuthenticated,
-		isLoading,
-		user,
-		signIn,
-		signOut,
-		ready
-	} = useAuthentication();
-	const dispatch = useDispatch();
+  const { workspaceId, inviteId } = useParams();
+  const history = useHistory();
+  const [addUser] = useMutation(ADD_USER);
+  const {
+    isAuthenticated,
+    isLoading,
+    user,
+    signIn,
+    signOut,
+    ready,
+  } = useAuthentication();
+  const dispatch = useDispatch();
 
-	useEffect(() => {
-		if (!ready && !isLoading && !isAuthenticated && !user) {
-			signIn();
-		}
-	}, [isLoading, isAuthenticated, signIn, user, ready]);
+  useEffect(() => {
+    if (!ready && !isLoading && !isAuthenticated && !user) {
+      signIn();
+    }
+  }, [isLoading, isAuthenticated, signIn, user, ready]);
 
-	useEffect(() => {
-		if (user) {
-			const { attributes, username } = user;
-			const { userId } = JSON.parse(attributes.identities)[0];
-			const { given_name, family_name, email } = attributes;
-			const userInfo = {
-				id: userId,
-				userName: username,
-				email: email,
-				firstName: given_name,
-				lastName: family_name,
-				workspaceId,
-				inviteId
-			};
+  useEffect(() => {
+    if (user) {
+      const { attributes, username } = user;
+      const { userId } = JSON.parse(attributes.identities)[0];
+      const { given_name, family_name, email } = attributes;
+      const userInfo = {
+        id: userId,
+        userName: username,
+        email: email,
+        firstName: given_name,
+        lastName: family_name,
+        workspaceId,
+        inviteId,
+      };
 
-			addUser({
-				variables: { input: userInfo }
-			})
-				.then((response) => {
-					dispatch(
-						setUser({
-							...(response.data.createUser || {}),
-							id: userId,
-							isOwner: !workspaceId || response.workspaceId === workspaceId
-						})
-					);
-				})
-				.catch((e) => {
-					(workspaceId || inviteId) && history.push('/');
-				});
-		}
-	}, [user, history, inviteId, workspaceId, dispatch, addUser]);
+      addUser({
+        variables: { input: userInfo },
+      })
+        .then((response) => {
+          dispatch(
+            setUser({
+              ...(response.data.createUser || {}),
+              id: userId,
+              isOwner: !workspaceId || response.workspaceId === workspaceId,
+            })
+          );
+        })
+        .catch((e) => {
+          (workspaceId || inviteId) && history.push('/');
+        });
+    }
+  }, [user, history, inviteId, workspaceId, dispatch, addUser]);
 
-	if (ready && isAuthenticated) {
-		return (
-			<UserProvider value={{ signOut, user }}>
-				<App />
-			</UserProvider>
-		);
-	}
+  if (ready && isAuthenticated) {
+    return (
+      <UserProvider value={{ signOut, user }}>
+        <App />
+      </UserProvider>
+    );
+  }
 
-	return null;
+  return null;
 };
 
 export default AppWithAuth;

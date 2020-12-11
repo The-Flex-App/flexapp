@@ -12,7 +12,7 @@ import AddVideo from './AddVideo';
 import ReactPlayer from 'react-player';
 import Divider from '@material-ui/core/Divider';
 import { selectedProjectSelector } from '../../store/slices/projects';
-import { VIDEOS } from '../../graphql/queries'
+import { VIDEOS } from '../../graphql/queries';
 
 const renderVideo = (data) => {
   const { video, id, title } = data;
@@ -21,13 +21,19 @@ const renderVideo = (data) => {
   return (
     <>
       <ListItem key={id}>
-        <Grid container direction="row" justify="flex-start" alignItems="center" spacing={3}>
-          <Grid item className="video-playback-container" xs={4}>
+        <Grid
+          container
+          direction='row'
+          justify='flex-start'
+          alignItems='center'
+          spacing={3}
+        >
+          <Grid item className='video-playback-container' xs={4}>
             <ReactPlayer
               url={url}
               controls
-              width="100%"
-              height="100%"
+              width='100%'
+              height='100%'
               config={{
                 file: {
                   attributes: {
@@ -51,14 +57,14 @@ const renderVideos = (data) => {
   const length = data.length;
 
   if (length === 0) {
-    return <Typography variant="body2">No updates found</Typography>;
+    return <Typography variant='body2'>No updates found</Typography>;
   }
 
   return <List>{data.map((video) => renderVideo(video))}</List>;
 };
 
 const renderNoUpdates = () => {
-  return <Typography variant="body2">No updates</Typography>;
+  return <Typography variant='body2'>No updates</Typography>;
 };
 
 function Videos({ selectedProject = {} }) {
@@ -87,17 +93,27 @@ function Videos({ selectedProject = {} }) {
 
   return (
     <>
-      <Grid container alignItems="center">
-        <Grid item className="page-title">
-          <Typography variant="h5">Updates</Typography>
+      <Grid container alignItems='center'>
+        <Grid item className='page-title'>
+          <Typography variant='h5'>Updates</Typography>
         </Grid>
         <Grid item>
-          <IconButton aria-label="add" color="primary" onClick={handleAddVideo} disabled={id === 0}>
+          <IconButton
+            aria-label='add'
+            color='primary'
+            onClick={handleAddVideo}
+            disabled={id === 0}
+          >
             {renderButton()}
           </IconButton>
         </Grid>
       </Grid>
-      <AddVideo open={openModal} onClose={handleClose} onConfirm={handleConfirm} projectId={id} />
+      <AddVideo
+        open={openModal}
+        onClose={handleClose}
+        onConfirm={handleConfirm}
+        projectId={id}
+      />
       {!selectedProject && renderNoUpdates()}
       {selectedProject && renderVideos(data.videosByProject)}
     </>
