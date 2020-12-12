@@ -12,11 +12,15 @@ import { useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { copyToClipboard } from '../../utils/misc';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { ADD_INVITE } from '../../graphql/mutations';
 import Menu from './Menu';
 
 const useStyles = makeStyles((theme) => ({
   settingButtonRoot: {
+    padding: 8,
+  },
+  logoutButtonRoot: {
     padding: 8,
   },
   buttonRoot: {
@@ -151,12 +155,11 @@ export default function UserInfo() {
   });
   const [addInvite] = useMutation(ADD_INVITE);
 
-  // eslint-disable-next-line no-unused-vars
   const { signOut } = useContext(UserContext);
 
-  // const handleLogout = () => {
-  // 	signOut();
-  // };
+  const handleLogout = () => {
+    signOut();
+  };
 
   const handleCopyToClipboard = () => {
     addInvite({
@@ -226,6 +229,14 @@ export default function UserInfo() {
             : []
         }
       />
+      <IconButton
+        aria-label='logout'
+        classes={{ root: classes.logoutButtonRoot }}
+        color='inherit'
+        onClick={handleLogout}
+      >
+        <ExitToAppIcon />
+      </IconButton>
     </div>
   );
 }
