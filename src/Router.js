@@ -1,11 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import AppWithAuth from './AppWithAuth';
+import Error from './components/Error';
 
 const Router = () => {
   return (
     <BrowserRouter>
       <Switch>
+        <Route path={'/error'} component={Error} exact />
         <Route
           path={['/:workspaceId/:inviteId', '/:workspaceId', '/']}
           component={AppWithAuth}

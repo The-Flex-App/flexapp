@@ -1,4 +1,6 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -10,6 +12,10 @@ import { ADD_PROJECT } from '../../graphql/mutations';
 
 export default function AddProject(props) {
   const { open, onClose } = props;
+  const { id: userId, workspaceId } = useSelector(({ users }) => {
+    return users.loggedInUser || {};
+  });
+  const { workspaceId: activeWorkspaceId } = useParams();
   const [newProject, setNewProject] = React.useState(false);
 
   const [addProject] = useMutation(ADD_PROJECT);
@@ -27,7 +33,13 @@ export default function AddProject(props) {
   const handleConfirm = async () => {
     try {
       await addProject({
-        variables: { input: { title: newProject } },
+        variables: {
+          input: {
+            title: newProject,
+            workspaceId: activeWorkspaceId || workspaceId,
+            userId,
+          },
+        },
         refetchQueries: ['GetProjects'],
       });
       handleClose();

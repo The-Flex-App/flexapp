@@ -1,4 +1,6 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -14,7 +16,14 @@ import { setSelectedProject } from '../../store/slices/projects';
 import { PROJECTS } from '../../graphql/queries';
 
 function Projects({ setSelectedProject }) {
-  const { loading, error, data } = useQuery(PROJECTS);
+  const { workspaceId } = useSelector(({ users }) => {
+    return users.loggedInUser || {};
+  });
+  const { workspaceId: activeWorkspaceId } = useParams();
+
+  const { loading, error, data } = useQuery(PROJECTS, {
+    variables: { workspaceId: activeWorkspaceId || workspaceId },
+  });
 
   const [openModal, setOpenModal] = React.useState(false);
   const [selection, setSelection] = React.useState(null);
@@ -54,7 +63,7 @@ function Projects({ setSelectedProject }) {
     );
   };
 
-  const renderProjects = (data) => {
+  const renderProjects = (data = []) => {
     const length = data.length;
 
     if (length === 0) {
@@ -84,7 +93,7 @@ function Projects({ setSelectedProject }) {
         </Grid>
       </Grid>
 
-      {renderProjects(data.projects)}
+      {renderProjects(data.projectByWorkspaceId)}
       <AddProject
         open={openModal}
         onClose={handleClose}

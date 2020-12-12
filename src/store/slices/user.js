@@ -15,10 +15,13 @@ const usersSlice = createSlice({
     setUser: (state, { payload }) => {
       state.loggedInUser = payload;
     },
+    setWorkspaceMemberList: (state, { payload }) => {
+      state.loggedInUser = { ...state.loggedInUser, ...payload };
+    },
   },
 });
 
-export const { setUser } = usersSlice.actions;
+export const { setUser, setWorkspaceMemberList } = usersSlice.actions;
 
 export const userSelector = (state) => state.users.loggedInUser;
 
