@@ -11,8 +11,8 @@ import LinkIcon from '@material-ui/icons/Link';
 import { useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { copyToClipboard } from '../../utils/misc';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { ADD_INVITE } from '../../graphql/mutations';
 import Menu from './Menu';
 
