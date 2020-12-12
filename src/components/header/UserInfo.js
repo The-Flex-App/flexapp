@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 import UserContext from '../../utils/userContext';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,10 +12,12 @@ import LinkIcon from '@material-ui/icons/Link';
 import { useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
-import { copyToClipboard } from '../../utils/misc';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { ADD_INVITE } from '../../graphql/mutations';
+import { copyToClipboard } from '../../utils/misc';
+import { ADD_INVITE, REMOVE_USER_WORKSPACE } from '../../graphql/mutations';
 import Menu from './Menu';
+import { setWorkspaceMemberList } from '../../store/slices/user';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   settingButtonRoot: {
@@ -71,6 +74,12 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: 'none',
     },
   },
+  menuText: {
+    width: 180,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
   removeButtonRoot: {
     padding: 5,
     marginLeft: 10,
@@ -81,13 +90,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getWorkspaceMenuItem = (data, classes, index) => {
+const getWorkspaceMenuItem = (
+  data,
+  classes,
+  index,
+  handleRemoveUserWorkspace,
+  activeWorkspaceId
+) => {
   const { workspaceId, firstName, lastName, picUrl } = data;
 
-  const handleRemoveWorkspace = () => {};
+  const handleRemoveWorkspace = (e) => {
+    e.stopPropagation();
+    handleRemoveUserWorkspace({ workspaceId });
+  };
 
   return (
-    <MenuItem key={index} classes={{ root: classes.menuItemRoot }}>
+    <MenuItem
+      key={index}
+      disabled={activeWorkspaceId === workspaceId}
+      classes={{ root: classes.menuItemRoot }}
+    >
       <Link className={classes.link} href={`/${workspaceId}`}>
         <Avatar
           variant='square'
@@ -95,7 +117,7 @@ const getWorkspaceMenuItem = (data, classes, index) => {
           src={picUrl}
           className={classes.square}
         />
-        {`${firstName} ${lastName}`}
+        <div className={classes.menuText}>{`${firstName} ${lastName}`}</div>
       </Link>
       <IconButton
         aria-label='remove'
@@ -111,10 +133,13 @@ const getWorkspaceMenuItem = (data, classes, index) => {
   );
 };
 
-const getMemberMenuItem = (data, classes, index) => {
-  const { firstName, lastName, picUrl } = data;
+const getMemberMenuItem = (data, classes, index, handleRemoveUserWorkspace) => {
+  const { id: userId, firstName, lastName, picUrl } = data;
 
-  const handleRemoveMember = () => {};
+  const handleRemoveMember = (e) => {
+    e.stopPropagation();
+    handleRemoveUserWorkspace({ userId });
+  };
 
   return (
     <MenuItem key={index} classes={{ root: classes.memberMenuItemRoot }}>
@@ -125,7 +150,7 @@ const getMemberMenuItem = (data, classes, index) => {
           src={picUrl}
           className={classes.circle}
         />
-        {`${firstName} ${lastName}`}
+        <div className={classes.menuText}>{`${firstName} ${lastName}`}</div>
       </div>
       <IconButton
         aria-label='remove'
@@ -143,8 +168,11 @@ const getMemberMenuItem = (data, classes, index) => {
 
 export default function UserInfo() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   const {
     id: userId,
+    role,
     workspaceId,
     memberWorkspaceInfo,
     ownerWorkspaceInfo,
@@ -153,7 +181,9 @@ export default function UserInfo() {
   } = useSelector(({ users }) => {
     return users.loggedInUser || {};
   });
+  const { workspaceId: activeWorkspaceId } = useParams();
   const [addInvite] = useMutation(ADD_INVITE);
+  const [removeUserWorkspace] = useMutation(REMOVE_USER_WORKSPACE);
 
   const { signOut } = useContext(UserContext);
 
@@ -176,33 +206,55 @@ export default function UserInfo() {
       });
   };
 
+  const handleRemoveUserWorkspace = (data) => {
+    removeUserWorkspace({
+      variables: {
+        input: { currentUserId: userId, userId, workspaceId, ...data },
+      },
+    })
+      .then((response) => {
+        dispatch(setWorkspaceMemberList(response.data.removeUserWorkspace));
+      })
+      .catch((e) => {
+        // Handle error
+        console.error(e);
+      });
+  };
+
   return (
     <div>
-      <Menu
-        id='menu-appbar'
-        trigger={
-          <IconButton
-            aria-label='setting of current user'
-            aria-controls='menu-appbar'
-            aria-haspopup='true'
-            color='inherit'
-            classes={{ root: classes.settingButtonRoot }}
-          >
-            <SettingsRoundedIcon />
-          </IconButton>
-        }
-        menuItems={[
-          ...(ownerWorkspaceInfo
-            ? ownerWorkspaceInfo.map((workspace, index) =>
-                getMemberMenuItem(workspace, classes, index)
-              )
-            : []),
-          <MenuItem onClick={handleCopyToClipboard} key={'copy-board-link'}>
-            {' '}
-            <LinkIcon classes={{ root: classes.copylink }} /> Copy board link
-          </MenuItem>,
-        ]}
-      />
+      {role === 'owner' && (
+        <Menu
+          id='menu-appbar'
+          trigger={
+            <IconButton
+              aria-label='setting of current user'
+              aria-controls='menu-appbar'
+              aria-haspopup='true'
+              color='inherit'
+              classes={{ root: classes.settingButtonRoot }}
+            >
+              <SettingsRoundedIcon />
+            </IconButton>
+          }
+          menuItems={[
+            ...(ownerWorkspaceInfo
+              ? ownerWorkspaceInfo.map((workspace, index) =>
+                  getMemberMenuItem(
+                    workspace,
+                    classes,
+                    index,
+                    handleRemoveUserWorkspace
+                  )
+                )
+              : []),
+            <MenuItem onClick={handleCopyToClipboard} key={'copy-board-link'}>
+              {' '}
+              <LinkIcon classes={{ root: classes.copylink }} /> Copy board link
+            </MenuItem>,
+          ]}
+        />
+      )}
       <Menu
         id='menu-appbar'
         trigger={
@@ -224,7 +276,13 @@ export default function UserInfo() {
         menuItems={
           memberWorkspaceInfo
             ? memberWorkspaceInfo.map((workspace, index) =>
-                getWorkspaceMenuItem(workspace, classes, index)
+                getWorkspaceMenuItem(
+                  workspace,
+                  classes,
+                  index,
+                  handleRemoveUserWorkspace,
+                  activeWorkspaceId
+                )
               )
             : []
         }

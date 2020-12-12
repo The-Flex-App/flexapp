@@ -1,6 +1,6 @@
 import React from 'react';
-
-import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { connect, useSelector } from 'react-redux';
 import { useQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import List from '@material-ui/core/List';
@@ -53,7 +53,7 @@ const renderVideo = (data) => {
   );
 };
 
-const renderVideos = (data) => {
+const renderVideos = (data = []) => {
   const length = data.length;
 
   if (length === 0) {
@@ -69,8 +69,15 @@ const renderNoUpdates = () => {
 
 function Videos({ selectedProject = {} }) {
   const { id = 0 } = selectedProject;
+  const { workspaceId } = useSelector(({ users }) => {
+    return users.loggedInUser || {};
+  });
+  const { workspaceId: activeWorkspaceId } = useParams();
   const { loading, error, data } = useQuery(VIDEOS, {
-    variables: { projectId: parseInt(id, 10) },
+    variables: {
+      projectId: parseInt(id, 10),
+      workspaceId: activeWorkspaceId || workspaceId,
+    },
   });
   const [openModal, setOpenModal] = React.useState(false);
 

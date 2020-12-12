@@ -15,7 +15,7 @@ const ADD_VIDEO = gql`
       thumbnail
       duration
       video
-      projectIdB
+      projectId
     }
   }
 `;
@@ -27,13 +27,16 @@ const ADD_USER = gql`
       lastName
       email
       workspaceId
+      role
       memberWorkspaceInfo {
+        id
         firstName
         lastName
         email
         workspaceId
       }
       ownerWorkspaceInfo {
+        id
         firstName
         lastName
         email
@@ -51,4 +54,25 @@ const ADD_INVITE = gql`
   }
 `;
 
-export { ADD_PROJECT, ADD_VIDEO, ADD_USER, ADD_INVITE };
+const REMOVE_USER_WORKSPACE = gql`
+  mutation RemoveUserWorkspace($input: UserWorkspaceInput) {
+    removeUserWorkspace(input: $input) {
+      memberWorkspaceInfo {
+        id
+        firstName
+        lastName
+        email
+        workspaceId
+      }
+      ownerWorkspaceInfo {
+        id
+        firstName
+        lastName
+        email
+        role
+      }
+    }
+  }
+`;
+
+export { ADD_PROJECT, ADD_VIDEO, ADD_USER, ADD_INVITE, REMOVE_USER_WORKSPACE };

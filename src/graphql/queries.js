@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 const PROJECTS = gql`
-  query GetProjects {
-    projects {
+  query GetProjects($workspaceId: String!) {
+    projectByWorkspaceId(workspaceId: $workspaceId) {
       id
       title
       description
@@ -11,9 +11,10 @@ const PROJECTS = gql`
 `;
 
 const VIDEOS = gql`
-  query GetVideos($projectId: Int) {
+  query GetVideos($projectId: Int, $workspaceId: String!) {
     videosByProject(
       projectId: $projectId
+      workspaceId: $workspaceId
       orderBy: { field: "createdAt", direction: desc }
     ) {
       id

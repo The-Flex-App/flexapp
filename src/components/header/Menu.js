@@ -6,6 +6,7 @@ const useStyles = makeStyles(() => ({
   menuPaper: {
     padding: 0,
     marginTop: 15,
+    width: 300,
   },
 }));
 

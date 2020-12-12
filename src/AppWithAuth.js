@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
 import { useParams, useHistory } from 'react-router-dom';
 import useAuthentication from './utils/useAuthentication';
@@ -38,6 +38,9 @@ Auth.configure({
 
 const AppWithAuth = () => {
   const { workspaceId, inviteId } = useParams();
+  const { id: userId } = useSelector(({ users }) => {
+    return users.loggedInUser || {};
+  });
   const history = useHistory();
   const [addUser] = useMutation(ADD_USER);
   const {
@@ -84,12 +87,12 @@ const AppWithAuth = () => {
           );
         })
         .catch((e) => {
-          (workspaceId || inviteId) && history.push('/');
+          history.push('/error', { error: e.message });
         });
     }
   }, [user, history, inviteId, workspaceId, dispatch, addUser]);
 
-  if (ready && isAuthenticated) {
+  if (ready && isAuthenticated && userId) {
     return (
       <UserProvider value={{ signOut, user }}>
         <App />
