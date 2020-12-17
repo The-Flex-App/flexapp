@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
 import { useParams, useHistory } from 'react-router-dom';
 import useAuthentication from './utils/useAuthentication';
 import { UserProvider } from './utils/userContext';
-import { setUser } from './store/slices/user';
+import { selectCurrentUserId, setUser } from './store/slices/user';
 import App from './App';
 import { ADD_USER } from './graphql/mutations';
 import { useMutation } from '@apollo/client';
@@ -38,9 +38,7 @@ Auth.configure({
 
 const AppWithAuth = () => {
   const { workspaceId, inviteId } = useParams();
-  const { id: userId } = useSelector(({ users }) => {
-    return users.loggedInUser || {};
-  });
+  const userId = useSelector(selectCurrentUserId);
   const history = useHistory();
   const [addUser] = useMutation(ADD_USER);
   const {
@@ -55,12 +53,30 @@ const AppWithAuth = () => {
 
   useEffect(() => {
     if (!ready && !isLoading && !isAuthenticated && !user) {
+      if (workspaceId) {
+        let url = `/${workspaceId}`;
+        if (inviteId) {
+          url += `/${inviteId}`;
+        }
+        window.sessionStorage.setItem('redirectUrl', url);
+      } else {
+        const redirectUrl = window.sessionStorage.getItem('redirectUrl');
+        redirectUrl && window.sessionStorage.removeItem('redirectUrl');
+      }
       signIn();
     }
-  }, [isLoading, isAuthenticated, signIn, user, ready]);
+  }, [isLoading, isAuthenticated, signIn, user, ready, workspaceId, inviteId]);
+
+  const [createUserRequested, setCreateUserRequested] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && !createUserRequested) {
+      const redirectUrl = window.sessionStorage.getItem('redirectUrl');
+      if (redirectUrl) {
+        history.push(redirectUrl);
+        window.sessionStorage.removeItem('redirectUrl');
+        return;
+      }
       const { attributes, username } = user;
       const { userId } = JSON.parse(attributes.identities)[0];
       const { given_name, family_name, email } = attributes;
@@ -74,6 +90,7 @@ const AppWithAuth = () => {
         inviteId,
       };
 
+      setCreateUserRequested(true);
       addUser({
         variables: { input: userInfo },
       })
@@ -90,7 +107,15 @@ const AppWithAuth = () => {
           history.push('/error', { error: e.message });
         });
     }
-  }, [user, history, inviteId, workspaceId, dispatch, addUser]);
+  }, [
+    user,
+    history,
+    inviteId,
+    workspaceId,
+    createUserRequested,
+    dispatch,
+    addUser,
+  ]);
 
   if (ready && isAuthenticated && userId) {
     return (

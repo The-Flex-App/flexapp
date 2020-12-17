@@ -11,10 +11,9 @@ const PROJECTS = gql`
 `;
 
 const VIDEOS = gql`
-  query GetVideos($projectId: Int, $workspaceId: String!) {
+  query GetVideos($projectId: Int) {
     videosByProject(
       projectId: $projectId
-      workspaceId: $workspaceId
       orderBy: { field: "createdAt", direction: desc }
     ) {
       id

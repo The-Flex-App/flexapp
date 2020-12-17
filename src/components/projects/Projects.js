@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -11,15 +11,14 @@ import AddProject from './AddProject';
 
 import { useQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
-import { connect } from 'react-redux';
 import { setSelectedProject } from '../../store/slices/projects';
 import { PROJECTS } from '../../graphql/queries';
+import { selectCurrentWorkspaceId } from '../../store/slices/user';
 
-function Projects({ setSelectedProject }) {
-  const { workspaceId } = useSelector(({ users }) => {
-    return users.loggedInUser || {};
-  });
+function Projects() {
+  const workspaceId = useSelector(selectCurrentWorkspaceId);
   const { workspaceId: activeWorkspaceId } = useParams();
+  const { dispatch } = useDispatch();
 
   const { loading, error, data } = useQuery(PROJECTS, {
     variables: { workspaceId: activeWorkspaceId || workspaceId },
@@ -43,7 +42,7 @@ function Projects({ setSelectedProject }) {
 
   const handleProjectSelected = (project) => {
     setSelection(project.id);
-    setSelectedProject(project);
+    dispatch(setSelectedProject(project));
   };
 
   const renderProject = (project) => {
@@ -104,10 +103,4 @@ function Projects({ setSelectedProject }) {
   );
 }
 
-const mapStateToProps = () => {
-  return {};
-};
-
-export default connect(mapStateToProps, {
-  setSelectedProject: setSelectedProject,
-})(Projects);
+export default Projects;
