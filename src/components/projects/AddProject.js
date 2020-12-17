@@ -9,12 +9,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useMutation } from '@apollo/client';
 import { ADD_PROJECT } from '../../graphql/mutations';
+import { selectCurrentWorkspaceId } from '../../store/slices/user';
 
 export default function AddProject(props) {
   const { open, onClose } = props;
-  const { id: userId, workspaceId } = useSelector(({ users }) => {
-    return users.loggedInUser || {};
-  });
+  const workspaceId = useSelector(selectCurrentWorkspaceId);
   const { workspaceId: activeWorkspaceId } = useParams();
   const [newProject, setNewProject] = React.useState(false);
 
@@ -37,7 +36,6 @@ export default function AddProject(props) {
           input: {
             title: newProject,
             workspaceId: activeWorkspaceId || workspaceId,
-            userId,
           },
         },
         refetchQueries: ['GetProjects'],

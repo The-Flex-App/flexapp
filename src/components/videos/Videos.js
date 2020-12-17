@@ -1,6 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import List from '@material-ui/core/List';
@@ -11,7 +10,7 @@ import AddIcon from '@material-ui/icons/Add';
 import AddVideo from './AddVideo';
 import ReactPlayer from 'react-player';
 import Divider from '@material-ui/core/Divider';
-import { selectedProjectSelector } from '../../store/slices/projects';
+import { selectCurrentProject } from '../../store/slices/projects';
 import { VIDEOS } from '../../graphql/queries';
 
 const renderVideo = (data) => {
@@ -67,16 +66,12 @@ const renderNoUpdates = () => {
   return <Typography variant='body2'>No updates</Typography>;
 };
 
-function Videos({ selectedProject = {} }) {
+function Videos() {
+  const selectedProject = useSelector(selectCurrentProject);
   const { id = 0 } = selectedProject;
-  const { workspaceId } = useSelector(({ users }) => {
-    return users.loggedInUser || {};
-  });
-  const { workspaceId: activeWorkspaceId } = useParams();
   const { loading, error, data } = useQuery(VIDEOS, {
     variables: {
       projectId: parseInt(id, 10),
-      workspaceId: activeWorkspaceId || workspaceId,
     },
   });
   const [openModal, setOpenModal] = React.useState(false);
@@ -127,10 +122,4 @@ function Videos({ selectedProject = {} }) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    selectedProject: selectedProjectSelector(state),
-  };
-};
-
-export default connect(mapStateToProps, {})(Videos);
+export default Videos;

@@ -17,7 +17,7 @@ import { copyToClipboard } from '../../utils/misc';
 import { ADD_INVITE, REMOVE_USER_WORKSPACE } from '../../graphql/mutations';
 import Menu from './Menu';
 import { setWorkspaceMemberList } from '../../store/slices/user';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   settingButtonRoot: {
@@ -104,13 +104,15 @@ const getWorkspaceMenuItem = (
     handleRemoveUserWorkspace({ workspaceId });
   };
 
+  const ItemComponent = activeWorkspaceId === workspaceId ? 'div' : Link;
+
   return (
     <MenuItem
       key={index}
-      disabled={activeWorkspaceId === workspaceId}
+      selected={activeWorkspaceId === workspaceId}
       classes={{ root: classes.menuItemRoot }}
     >
-      <Link className={classes.link} href={`/${workspaceId}`}>
+      <ItemComponent className={classes.link} href={`/${workspaceId}`}>
         <Avatar
           variant='square'
           alt={`${firstName} ${lastName}`}
@@ -118,7 +120,7 @@ const getWorkspaceMenuItem = (
           className={classes.square}
         />
         <div className={classes.menuText}>{`${firstName} ${lastName}`}</div>
-      </Link>
+      </ItemComponent>
       <IconButton
         aria-label='remove'
         aria-controls='menu-appbar'
@@ -169,6 +171,7 @@ const getMemberMenuItem = (data, classes, index, handleRemoveUserWorkspace) => {
 export default function UserInfo() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const {
     id: userId,
@@ -214,6 +217,13 @@ export default function UserInfo() {
     })
       .then((response) => {
         dispatch(setWorkspaceMemberList(response.data.removeUserWorkspace));
+        if (
+          activeWorkspaceId &&
+          data.workspaceId &&
+          activeWorkspaceId === data.workspaceId
+        ) {
+          history.push('/');
+        }
       })
       .catch((e) => {
         // Handle error

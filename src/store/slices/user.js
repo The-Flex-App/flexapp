@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 export const initialState = {
   loggedInUser: {
@@ -24,5 +24,15 @@ const usersSlice = createSlice({
 export const { setUser, setWorkspaceMemberList } = usersSlice.actions;
 
 export const userSelector = (state) => state.users.loggedInUser;
+
+export const selectCurrentUserId = createSelector(
+  (state) => state.users.loggedInUser,
+  ({ id }) => id
+);
+
+export const selectCurrentWorkspaceId = createSelector(
+  (state) => state.users.loggedInUser,
+  ({ workspaceId }) => workspaceId
+);
 
 export default usersSlice.reducer;

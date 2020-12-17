@@ -1,6 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -33,11 +31,6 @@ const getSignedUrl = (fileName, fileType = 'video') => {
 
 export default function AddVideo(props) {
   const { open, onClose, projectId } = props;
-  const { id: userId, workspaceId } = useSelector(({ users }) => {
-    return users.loggedInUser || {};
-  });
-  const { workspaceId: activeWorkspaceId } = useParams();
-
   const [addVideo] = useMutation(ADD_VIDEO);
   const [recordingData, setRecordingData] = React.useState({});
   const [saveError, setSaveError] = React.useState(null);
@@ -111,8 +104,6 @@ export default function AddVideo(props) {
         uploadFileToS3(res.form, video).then(() => {
           const videoInput = {
             projectId: parseInt(projectId, 10),
-            workspaceId: activeWorkspaceId || workspaceId,
-            userId,
             duration,
             title: videoTitle,
             video: videoKey,
