@@ -86,6 +86,7 @@ function Projects() {
             aria-label='add'
             color='primary'
             onClick={handleAddProject}
+            disabled={!!activeWorkspaceId}
           >
             <AddIcon />
           </IconButton>
