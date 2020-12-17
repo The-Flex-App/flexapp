@@ -18,7 +18,7 @@ import { selectCurrentWorkspaceId } from '../../store/slices/user';
 function Projects() {
   const workspaceId = useSelector(selectCurrentWorkspaceId);
   const { workspaceId: activeWorkspaceId } = useParams();
-  const { dispatch } = useDispatch();
+  const dispatch = useDispatch();
 
   const { loading, error, data } = useQuery(PROJECTS, {
     variables: { workspaceId: activeWorkspaceId || workspaceId },

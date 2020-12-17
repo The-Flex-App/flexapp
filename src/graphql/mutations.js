@@ -28,19 +28,18 @@ const ADD_USER = gql`
       email
       workspaceId
       role
-      memberWorkspaceInfo {
+      workspaces {
         id
         firstName
         lastName
         email
         workspaceId
       }
-      ownerWorkspaceInfo {
+      workspaceMembers {
         id
         firstName
         lastName
         email
-        role
       }
     }
   }
@@ -57,19 +56,18 @@ const ADD_INVITE = gql`
 const REMOVE_USER_WORKSPACE = gql`
   mutation RemoveUserWorkspace($input: UserWorkspaceInput) {
     removeUserWorkspace(input: $input) {
-      memberWorkspaceInfo {
+      workspaces {
         id
         firstName
         lastName
         email
         workspaceId
       }
-      ownerWorkspaceInfo {
+      workspaceMembers {
         id
         firstName
         lastName
         email
-        role
       }
     }
   }
