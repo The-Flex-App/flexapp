@@ -9,7 +9,11 @@ const Router = () => {
       <Switch>
         <Route path={'/error'} component={Error} exact />
         <Route
-          path={['/:workspaceId/:inviteId', '/:workspaceId', '/']}
+          path={[
+            '/dashboards/:workspaceId/:inviteId',
+            '/dashboards/:workspaceId',
+            '/',
+          ]}
           component={AppWithAuth}
         />
       </Switch>

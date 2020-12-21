@@ -54,7 +54,7 @@ const AppWithAuth = () => {
   useEffect(() => {
     if (!ready && !isLoading && !isAuthenticated && !user) {
       if (workspaceId) {
-        let url = `/${workspaceId}`;
+        let url = `/dashboards/${workspaceId}`;
         if (inviteId) {
           url += `/${inviteId}`;
         }

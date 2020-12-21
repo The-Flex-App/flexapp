@@ -4,13 +4,12 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { deepOrange } from '@material-ui/core/colors';
 import MenuItem from '@material-ui/core/MenuItem';
 import LinkIcon from '@material-ui/icons/Link';
 import { useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
-import { copyToClipboard } from '../../utils/misc';
+import { copyToClipboard, getFullName } from '../../utils/misc';
 import { ADD_INVITE, REMOVE_USER_WORKSPACE } from '../../graphql/mutations';
 import Menu from './Menu';
 import { setWorkspaceMemberList } from '../../store/slices/user';
@@ -28,9 +27,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   circle: {
-    color: theme.palette.getContrastText(deepOrange[500]),
-    backgroundColor: deepOrange[500],
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.light,
     marginRight: 10,
+    fontSize: '18px',
   },
   link: {
     display: 'flex',
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MemberMenuItem = forwardRef((props, ref) => {
   const classes = useStyles();
-  const { id: userId, firstName, lastName, picUrl, onRemove } = props;
+  const { id: userId, firstName, lastName, email, picUrl, onRemove } = props;
 
   const handleRemoveMember = (e) => {
     e.stopPropagation();
@@ -70,11 +70,13 @@ const MemberMenuItem = forwardRef((props, ref) => {
       <div className={classes.link}>
         <Avatar
           variant='circular'
-          alt={`${firstName} ${lastName}`}
-          src={picUrl}
           className={classes.circle}
+          alt={getFullName(firstName, lastName, email)}
+          src={picUrl ? picUrl : ''}
         />
-        <div className={classes.menuText}>{`${firstName} ${lastName}`}</div>
+        <div className={classes.menuText}>
+          {getFullName(firstName, lastName, email)}
+        </div>
       </div>
       <IconButton
         aria-label='remove'
@@ -109,7 +111,7 @@ export default function SettingMenu(props) {
     })
       .then((response) => {
         const { id } = response.data.createInvitaton;
-        const url = `${window.location.origin}/${workspaceId}/${id}`;
+        const url = `${window.location.origin}/dashboards/${workspaceId}/${id}`;
         copyToClipboard(url);
       })
       .catch((e) => {
@@ -151,6 +153,7 @@ export default function SettingMenu(props) {
           <SettingsRoundedIcon />
         </IconButton>
       }
+      menuItemsTitle={'Users on this board'}
       menuItems={[
         ...(workspaceMembers
           ? workspaceMembers.map((workspace, index) => (

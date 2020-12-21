@@ -4,8 +4,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { deepOrange } from '@material-ui/core/colors';
 import MenuItem from '@material-ui/core/MenuItem';
+import DehazeIcon from '@material-ui/icons/Dehaze';
 import Link from '@material-ui/core/Link';
 import { useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
@@ -13,6 +13,7 @@ import { REMOVE_USER_WORKSPACE } from '../../graphql/mutations';
 import Menu from './Menu';
 import { setWorkspaceMemberList } from '../../store/slices/user';
 import { useHistory, useParams } from 'react-router-dom';
+import { getAvatarChars, getFullName } from '../../utils/misc';
 
 const useStyles = makeStyles((theme) => ({
   buttonRoot: {
@@ -25,15 +26,17 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
   },
   square: {
-    color: theme.palette.getContrastText(deepOrange[500]),
-    backgroundColor: deepOrange[500],
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.light,
     marginRight: 10,
     boxShadow: '0 5px 5px -2px rgba(0, 0, 0, 0.4)',
+    fontSize: '18px',
   },
   accountAvatar: {
-    color: theme.palette.getContrastText(deepOrange[500]),
-    backgroundColor: deepOrange[500],
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.light,
     boxShadow: '0 5px 5px -2px rgba(0, 0, 0, 0.4)',
+    fontSize: '18px',
   },
   link: {
     display: 'flex',
@@ -61,6 +64,7 @@ const WorkspacerMenuItem = forwardRef((props, ref) => {
     workspaceId,
     firstName,
     lastName,
+    email,
     picUrl,
     onRemove,
     isActive,
@@ -79,14 +83,21 @@ const WorkspacerMenuItem = forwardRef((props, ref) => {
       selected={isActive}
       classes={{ root: classes.menuItemRoot }}
     >
-      <ItemComponent className={classes.link} href={`/${workspaceId}`}>
+      <ItemComponent
+        className={classes.link}
+        href={`dashboards/${workspaceId}`}
+      >
         <Avatar
           variant='square'
-          alt={`${firstName} ${lastName}`}
-          src={picUrl}
           className={classes.square}
-        />
-        <div className={classes.menuText}>{`${firstName} ${lastName}`}</div>
+          alt={getFullName(firstName, lastName, email)}
+          src={picUrl ? picUrl : ''}
+        >
+          {getAvatarChars(firstName, lastName) || <DehazeIcon />}
+        </Avatar>
+        <div className={classes.menuText}>
+          {getFullName(firstName, lastName, email)}
+        </div>
       </ItemComponent>
       <IconButton
         aria-label='remove'
@@ -108,7 +119,7 @@ export default function WorkspaceMenu(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { id: userId, workspaces, firstName, lastName } = useSelector(
+  const { id: userId, workspaces, firstName, lastName, email } = useSelector(
     ({ users }) => {
       return users.loggedInUser || {};
     }
@@ -147,12 +158,15 @@ export default function WorkspaceMenu(props) {
         >
           <Avatar
             variant='square'
-            alt={firstName ? `${firstName} ${lastName}` : ''}
-            src={'./user.png'}
+            alt={getFullName(firstName, lastName, email)}
+            src={getAvatarChars(firstName, lastName) ? '/' : ''}
             className={classes.accountAvatar}
-          />
+          >
+            {getAvatarChars(firstName, lastName) || <DehazeIcon />}
+          </Avatar>
         </IconButton>
       }
+      menuItemsTitle={'Boards shared with me'}
       menuItems={workspaces.map((workspace, index) => (
         <WorkspacerMenuItem
           {...workspace}
