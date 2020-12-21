@@ -3,6 +3,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import UserInfo from './UserInfo';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -17,10 +18,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'inline-block',
     fontSize: '19pt',
     padding: '0 15px',
-    background: '#0199ad',
+    background: theme.palette.primary.main,
     height: 40,
     lineHeight: '40px',
-    color: '#FFF',
+    color: theme.palette.primary.contrastText,
   },
   appBarRoot: {
     padding: 0,
@@ -29,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ButtonAppBar() {
   const classes = useStyles();
+  const history = useHistory();
+
+  const onHomeClick = () => {
+    history.push('/');
+  };
   return (
     <div className={classes.root}>
       <AppBar
@@ -38,7 +44,9 @@ export default function ButtonAppBar() {
       >
         <Toolbar>
           <Typography variant='h5' className={classes.title}>
-            <div className={classes.flexTitle}>FLEX</div>
+            <div className={classes.flexTitle} onClick={onHomeClick}>
+              FLEX
+            </div>
           </Typography>
           <UserInfo />
         </Toolbar>
