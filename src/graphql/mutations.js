@@ -5,6 +5,54 @@ const ADD_PROJECT = gql`
     createProject(input: $input) {
       id
       title
+      rag
+      finishDate
+    }
+  }
+`;
+
+const EDIT_PROJECT = gql`
+  mutation EditProject($id: ID!, $input: ProjectInput!) {
+    editProject(id: $id, input: $input) {
+      id
+      title
+      rag
+      finishDate
+    }
+  }
+`;
+
+const DELETE_PROJECT = gql`
+  mutation DeleteProject($id: ID!) {
+    deleteProject(id: $id) {
+      id
+      title
+      rag
+      finishDate
+    }
+  }
+`;
+
+const ADD_TOPIC = gql`
+  mutation CreateTopic($input: TopicInput!) {
+    createTopic(input: $input) {
+      title
+    }
+  }
+`;
+
+const EDIT_TOPIC = gql`
+  mutation EditTopic($id: ID!, $input: TopicInput!) {
+    editTopic(id: $id, input: $input) {
+      title
+    }
+  }
+`;
+
+const DELETE_TOPIC = gql`
+  mutation DeleteTopic($id: ID!) {
+    deleteTopic(id: $id) {
+      title
     }
   }
 `;
@@ -16,6 +64,7 @@ const ADD_VIDEO = gql`
       duration
       video
       projectId
+      topicId
     }
   }
 `;
@@ -73,4 +122,15 @@ const REMOVE_USER_WORKSPACE = gql`
   }
 `;
 
-export { ADD_PROJECT, ADD_VIDEO, ADD_USER, ADD_INVITE, REMOVE_USER_WORKSPACE };
+export {
+  ADD_PROJECT,
+  EDIT_PROJECT,
+  DELETE_PROJECT,
+  ADD_TOPIC,
+  EDIT_TOPIC,
+  DELETE_TOPIC,
+  ADD_VIDEO,
+  ADD_USER,
+  ADD_INVITE,
+  REMOVE_USER_WORKSPACE,
+};

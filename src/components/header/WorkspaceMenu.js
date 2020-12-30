@@ -30,13 +30,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.light,
     marginRight: 10,
     boxShadow: '0 5px 5px -2px rgba(0, 0, 0, 0.4)',
-    fontSize: '18px',
   },
   accountAvatar: {
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.light,
     boxShadow: '0 5px 5px -2px rgba(0, 0, 0, 0.4)',
-    fontSize: '18px',
   },
   link: {
     display: 'flex',
@@ -67,6 +65,7 @@ const WorkspacerMenuItem = forwardRef((props, ref) => {
     email,
     picUrl,
     onRemove,
+    isRemovable = true,
     isActive,
   } = props;
 
@@ -85,7 +84,7 @@ const WorkspacerMenuItem = forwardRef((props, ref) => {
     >
       <ItemComponent
         className={classes.link}
-        href={`dashboards/${workspaceId}`}
+        href={`/dashboards/${workspaceId}`}
       >
         <Avatar
           variant='square'
@@ -99,16 +98,18 @@ const WorkspacerMenuItem = forwardRef((props, ref) => {
           {getFullName(firstName, lastName, email)}
         </div>
       </ItemComponent>
-      <IconButton
-        aria-label='remove'
-        aria-controls='menu-appbar'
-        aria-haspopup='true'
-        onClick={handleRemoveWorkspace}
-        color='inherit'
-        classes={{ root: classes.removeButtonRoot }}
-      >
-        <HighlightOffIcon />
-      </IconButton>
+      {isRemovable && (
+        <IconButton
+          aria-label='remove'
+          aria-controls='menu-appbar'
+          aria-haspopup='true'
+          onClick={handleRemoveWorkspace}
+          color='inherit'
+          classes={{ root: classes.removeButtonRoot }}
+        >
+          <HighlightOffIcon />
+        </IconButton>
+      )}
     </MenuItem>
   );
 });
@@ -119,11 +120,21 @@ export default function WorkspaceMenu(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { id: userId, workspaces, firstName, lastName, email } = useSelector(
-    ({ users }) => {
-      return users.loggedInUser || {};
-    }
-  );
+  const {
+    id: userId,
+    workspaces,
+    firstName,
+    lastName,
+    email,
+    workspaceId,
+  } = useSelector(({ users }) => {
+    return users.loggedInUser || {};
+  });
+
+  const workspaceList = [
+    { firstName, lastName, email, workspaceId },
+    ...workspaces,
+  ];
 
   const [removeUserWorkspace] = useMutation(REMOVE_USER_WORKSPACE);
 
@@ -167,12 +178,16 @@ export default function WorkspaceMenu(props) {
         </IconButton>
       }
       menuItemsTitle={'Boards shared with me'}
-      menuItems={workspaces.map((workspace, index) => (
+      menuItems={workspaceList.map((workspace, index) => (
         <WorkspacerMenuItem
           {...workspace}
           key={index}
+          isRemovable={workspace.workspaceId !== workspaceId}
           onRemove={handleRemoveUserWorkspace}
-          isActive={workspace.workspaceId === activeWorkspaceId}
+          isActive={
+            workspace.workspaceId === activeWorkspaceId ||
+            (!activeWorkspaceId && workspace.workspaceId === workspaceId)
+          }
         />
       ))}
     />

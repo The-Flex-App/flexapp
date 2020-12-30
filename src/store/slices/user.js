@@ -27,12 +27,17 @@ export const userSelector = (state) => state.users.loggedInUser;
 
 export const selectCurrentUserId = createSelector(
   (state) => state.users.loggedInUser,
-  ({ id }) => id
+  ({ id }) => id,
 );
 
 export const selectCurrentWorkspaceId = createSelector(
   (state) => state.users.loggedInUser,
-  ({ workspaceId }) => workspaceId
+  ({ workspaceId }) => workspaceId,
+);
+
+export const selectIsOwner = createSelector(
+  (state) => state.users.loggedInUser,
+  ({ role }) => role === 'owner',
 );
 
 export default usersSlice.reducer;

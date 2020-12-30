@@ -2,13 +2,14 @@ import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
 import UserInfo from './UserInfo';
-import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    marginBottom: theme.spacing(4),
   },
   title: {
     flexGrow: 1,
@@ -22,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
     lineHeight: '40px',
     color: theme.palette.primary.contrastText,
+    cursor: 'pointer',
+
+    '&:hover': {
+      textDecoration: 'none',
+    },
   },
   appBarRoot: {
     padding: 0,
@@ -30,11 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ButtonAppBar() {
   const classes = useStyles();
-  const history = useHistory();
 
-  const onHomeClick = () => {
-    history.push('/');
-  };
   return (
     <div className={classes.root}>
       <AppBar
@@ -44,9 +46,9 @@ export default function ButtonAppBar() {
       >
         <Toolbar>
           <Typography variant='h5' className={classes.title}>
-            <div className={classes.flexTitle} onClick={onHomeClick}>
+            <Link component={Link} href='/' className={classes.flexTitle}>
               FLEX
-            </div>
+            </Link>
           </Typography>
           <UserInfo />
         </Toolbar>

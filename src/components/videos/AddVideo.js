@@ -1,14 +1,23 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { useMutation } from '@apollo/client';
+import { makeStyles } from '@material-ui/core/styles';
 import VideoRecorder from 'react-video-recorder';
 import TextField from '@material-ui/core/TextField';
 import { v4 as uuidv4 } from 'uuid';
 import { ADD_VIDEO } from '../../graphql/mutations';
+import { Typography } from '@material-ui/core';
+import { selectCurrentUserId } from '../../store/slices/user';
+
+const useStyles = makeStyles((theme) => ({
+  addVideobutton: {
+    marginLeft: theme.spacing(1),
+  },
+  quickSummaryTextarea: {
+    margin: theme.spacing(2, 0),
+  },
+}));
 
 const getSignedUrl = (fileName, fileType = 'video') => {
   const opts = {
@@ -19,7 +28,7 @@ const getSignedUrl = (fileName, fileType = 'video') => {
   return fetch(
     `${process.env.REACT_APP_API_ENDPOINT}/signed-url?` +
       new URLSearchParams(opts),
-    {}
+    {},
   )
     .then(function (response) {
       return response.json();
@@ -30,7 +39,9 @@ const getSignedUrl = (fileName, fileType = 'video') => {
 };
 
 export default function AddVideo(props) {
-  const { open, onClose, projectId } = props;
+  const classes = useStyles();
+  const userId = useSelector(selectCurrentUserId);
+  const { open, onClose, projectId, topicId } = props;
   const [addVideo] = useMutation(ADD_VIDEO);
   const [recordingData, setRecordingData] = React.useState({});
   const [saveError, setSaveError] = React.useState(null);
@@ -88,7 +99,7 @@ export default function AddVideo(props) {
           variables: {
             input: videoInput,
           },
-          refetchQueries: ['GetVideos'],
+          refetchQueries: ['GetVideosByTopic'],
         });
 
         if (error) {
@@ -104,6 +115,8 @@ export default function AddVideo(props) {
         uploadFileToS3(res.form, video).then(() => {
           const videoInput = {
             projectId: parseInt(projectId, 10),
+            userId,
+            topicId: parseInt(topicId, 10),
             duration,
             title: videoTitle,
             video: videoKey,
@@ -129,63 +142,62 @@ export default function AddVideo(props) {
 
   const { videoBlob = null } = recordingData;
 
+  if (!open) {
+    return null;
+  }
+
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby='form-dialog-title'
-        fullWidth
-      >
-        <DialogTitle id='form-dialog-title'>Add an update</DialogTitle>
-        <DialogContent>
-          {renderErrors()}
-          <TextField
-            autoFocus
-            margin='dense'
-            id='name'
-            label='Video description'
-            fullWidth
-            onChange={handleInputChange}
-            variant='outlined'
-            style={{ marginBottom: '15px' }}
-          />
-          <VideoRecorder
-            timeLimit={120000}
-            showReplayControls={true}
-            replayVideoAutoplayAndLoopOff={true}
-            onTurnOnCamera={handleCameraTurnOn}
-            onRecordingComplete={(
+      <Typography component='div'>
+        {renderErrors()}
+        <VideoRecorder
+          timeLimit={120000}
+          showReplayControls={true}
+          replayVideoAutoplayAndLoopOff={true}
+          onTurnOnCamera={handleCameraTurnOn}
+          onRecordingComplete={(
+            videoBlob,
+            startedAt,
+            thumbnailBlob,
+            duration,
+          ) => {
+            // Do something with the video...
+            setRecordingData({
               videoBlob,
               startedAt,
+              duration,
               thumbnailBlob,
-              duration
-            ) => {
-              // Do something with the video...
-              setRecordingData({
-                videoBlob,
-                startedAt,
-                duration,
-                thumbnailBlob,
-              });
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color='primary'>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirm}
-            color='primary'
-            type='button'
-            variant='contained'
-            disabled={!videoBlob}
-          >
-            Add Video
-          </Button>
-        </DialogActions>
-      </Dialog>
+            });
+          }}
+        />
+        <TextField
+          autoFocus
+          margin='dense'
+          multiline
+          rows={5}
+          id='quick-summary'
+          label='Quick summary'
+          onChange={handleInputChange}
+          variant='outlined'
+          fullWidth
+          classes={{ root: classes.quickSummaryTextarea }}
+        />
+      </Typography>
+      <Typography component='div' align={'right'}>
+        <Button onClick={handleClose} color='primary'>
+          Cancel
+        </Button>
+        <Button
+          onClick={handleConfirm}
+          color='primary'
+          type='button'
+          variant='contained'
+          disabled={!videoBlob}
+          classes={{ root: classes.addVideobutton }}
+        >
+          Add Video
+        </Button>
+      </Typography>
     </div>
   );
 }
