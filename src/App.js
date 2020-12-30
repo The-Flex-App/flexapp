@@ -9,6 +9,7 @@ import Projects from './components/projects/Projects';
 import Copyright from './components/Copyright';
 import Videos from './components/videos/Videos';
 import muiTheme from './muiTheme';
+import { Typography } from '@material-ui/core';
 
 function App() {
   const theme = muiTheme;
@@ -23,8 +24,11 @@ function App() {
           <Grid item xs={3} className='project-list'>
             <Projects />
           </Grid>
-          <Grid item xs={9} className='videos-list'>
+          <Grid item xs={7} className='videos-list'>
             <Videos />
+          </Grid>
+          <Grid item xs={2} className='broadcast-list'>
+            <Typography>Broadcast</Typography>
           </Grid>
         </Grid>
         <Grid item xs={12}>

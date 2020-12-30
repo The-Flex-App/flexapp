@@ -6,15 +6,41 @@ const PROJECTS = gql`
       id
       title
       description
+      rag
+      finishDate
     }
   }
 `;
 
-const VIDEOS = gql`
-  query GetVideos($projectId: Int) {
-    videosByProject(
+const TOPICS = gql`
+  query GetTopics($projectId: Int!) {
+    topicsByProjectId(projectId: $projectId) {
+      id
+      title
+    }
+  }
+`;
+
+// const VIDEOS = gql`
+//   query GetVideos($projectId: Int) {
+//     videosByProject(
+//       projectId: $projectId
+//       orderBy: { field: "createdAt", direction: desc }
+//     ) {
+//       id
+//       video
+//       thumbnail
+//       title
+//     }
+//   }
+// `;
+
+const VIDEOS_TOPIC = gql`
+  query GetVideosByTopic($projectId: Int, $topicId: Int) {
+    videosByTopic(
       projectId: $projectId
-      orderBy: { field: "createdAt", direction: desc }
+      topicId: $topicId
+      orderBy: { field: "updatedAt", direction: desc }
     ) {
       id
       video
@@ -37,4 +63,4 @@ const USERINFO = gql`
   }
 `;
 
-export { PROJECTS, VIDEOS, USERINFO };
+export { PROJECTS, USERINFO, TOPICS, VIDEOS_TOPIC };

@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text);
 };
@@ -12,4 +14,9 @@ export const getFullName = (firstName, lastName, defaultName = '') => {
   let result = firstName ? `${firstName} ` : '';
   result += lastName ? lastName : '';
   return result || defaultName;
+};
+
+export const getfinishDateToString = (date) => {
+  if (!date) return null;
+  return dayjs(date).format("MMM 'YY");
 };

@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.light,
     marginRight: 10,
-    fontSize: '18px',
   },
   link: {
     display: 'flex',
@@ -99,7 +98,7 @@ export default function SettingMenu(props) {
   const { id: userId, role, workspaceId, workspaceMembers } = useSelector(
     ({ users }) => {
       return users.loggedInUser || {};
-    }
+    },
   );
 
   const [addInvite] = useMutation(ADD_INVITE);

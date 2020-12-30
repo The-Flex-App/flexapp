@@ -1,12 +1,11 @@
 .project-list {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
-  padding-right: 1rem !important;
   overflow: auto;
   height: 40rem;
 }
 
 .videos-list {
-  padding-left: 1rem !important;
+  padding: 0 1rem;
 }
 
 [class*='render-actions__ActionsWrapper'] {
