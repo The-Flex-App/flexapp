@@ -68,6 +68,21 @@ const ADD_VIDEO = gql`
     }
   }
 `;
+const EDIT_VIDEO = gql`
+  mutation EditVideo($id: ID!, $input: VideoInput!) {
+    editVideo(id: $id, input: $input) {
+      title
+    }
+  }
+`;
+
+const DELETE_VIDEO = gql`
+  mutation DeleteVideo($id: ID!) {
+    deleteVideo(id: $id) {
+      title
+    }
+  }
+`;
 
 const ADD_USER = gql`
   mutation CreateUser($input: UserInput) {
@@ -130,6 +145,8 @@ export {
   EDIT_TOPIC,
   DELETE_TOPIC,
   ADD_VIDEO,
+  EDIT_VIDEO,
+  DELETE_VIDEO,
   ADD_USER,
   ADD_INVITE,
   REMOVE_USER_WORKSPACE,

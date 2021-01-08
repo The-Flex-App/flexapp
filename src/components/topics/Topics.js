@@ -7,12 +7,13 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { makeStyles } from '@material-ui/core/styles';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
-import AddTopic from './AddTopic';
+import Typography from '@material-ui/core/Typography';
 
-import { useQuery } from '@apollo/client';
-import { Typography } from '@material-ui/core';
-import { setSelectedTopic } from '../../store/slices/topics';
-import { TOPICS } from '../../graphql/queries';
+import AddTopic from './AddTopic';
+import {
+  setSelectedTopic,
+  selectCurrentTopic,
+} from '../../store/slices/topics';
 import { selectIsOwner } from '../../store/slices/user';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,15 +62,11 @@ const useStyles = makeStyles((theme) => ({
 function Topics(props) {
   const classes = useStyles();
   const isOwner = useSelector(selectIsOwner);
-  const { projectId } = props;
+  const selectedTopic = useSelector(selectCurrentTopic);
+  const { projectId, topics } = props;
   const dispatch = useDispatch();
 
-  const { loading, error, data } = useQuery(TOPICS, {
-    variables: { projectId: parseInt(projectId, 10) },
-  });
-
   const [openModal, setOpenModal] = React.useState(false);
-  const [selection, setSelection] = React.useState(null);
   const [editTopic, setEditTopic] = React.useState(null);
 
   const handleAddTopic = () => {
@@ -92,7 +89,6 @@ function Topics(props) {
   };
 
   const handleTopicSelected = (topic) => {
-    setSelection(topic.id);
     dispatch(
       setSelectedTopic({ ...topic, projectId: parseInt(projectId, 10) }),
     );
@@ -106,7 +102,7 @@ function Topics(props) {
         <ListItem
           button
           onClick={() => handleTopicSelected(topic)}
-          selected={id === selection}
+          selected={id === selectedTopic.id}
           className={classes.listItem}
         >
           <Typography component='div' className={classes.topicTitleWrapper}>
@@ -143,15 +139,9 @@ function Topics(props) {
     );
   };
 
-  if (loading) return 'Loading...';
-
   return (
     <>
-      {error ? (
-        <Typography color={'secondary'}>Error! {error.message}</Typography>
-      ) : (
-        renderTopics(data.topicsByProjectId)
-      )}
+      {renderTopics(topics || [])}
       {isOwner && (
         <React.Fragment>
           <Typography component='div' align={'right'}>

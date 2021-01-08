@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -7,6 +7,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import SaveIcon from '@material-ui/icons/Save';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Radio from '@material-ui/core/Radio';
@@ -14,9 +15,12 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import { useMutation } from '@apollo/client';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import { DatePicker } from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles';
-import dayjs from 'dayjs';
+import { useMutation } from '@apollo/client';
+import { format } from 'date-fns';
 import {
   ADD_PROJECT,
   EDIT_PROJECT,
@@ -24,63 +28,109 @@ import {
 } from '../../graphql/mutations';
 import { selectCurrentWorkspaceId } from '../../store/slices/user';
 import ConfirmationDialog from '../ConfirmationDialog';
+import { setAppLoading } from '../../store/slices/app';
 
 const useStyles = makeStyles((theme) => ({
+  dialogTitle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   actionsRoot: {
     padding: theme.spacing(1, 3),
   },
-  finishDateLabel: {
-    background: theme.palette.common.white,
-    width: 200,
+  checked: {
+    '&$redRadioButton': {
+      color: '#ff0000',
+    },
+    '&$yellowRadioButton': {
+      color: '#fac710',
+    },
+    '&$greenRadioButton': {
+      color: '#0ca789',
+    },
   },
-  finishDateLabelShrink: {
-    width: 'auto',
+  redRadioButton: {
+    color: '#ff0000',
+    '& svg': {
+      fontSize: 30,
+    },
+  },
+  yellowRadioButton: {
+    color: '#fac710',
+    '& svg': {
+      fontSize: 30,
+    },
+  },
+  greenRadioButton: {
+    color: '#0ca789',
+    '& svg': {
+      fontSize: 30,
+    },
   },
 }));
 
 export default function AddProject(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { open, onClose, selectedProject } = props;
   const workspaceId = useSelector(selectCurrentWorkspaceId);
   const { workspaceId: activeWorkspaceId } = useParams();
+  const [isEditMode, setEditMode] = React.useState(!!selectedProject);
+  const [isDirty, setDirty] = React.useState(false);
   const [openConfirmation, setOpenConfirmation] = React.useState(false);
   const [projectTitle, setProjectTitle] = React.useState(
     selectedProject && selectedProject.title,
   );
   const [projectFinishDate, setProjectFinishDate] = React.useState(
-    selectedProject && dayjs(selectedProject.finishDate).format('YYYY-MM'),
+    format(new Date(selectedProject && selectedProject.finishDate), 'y-MM'),
   );
   const [projectRag, setProjectRAG] = React.useState(
     selectedProject && selectedProject.rag,
   );
 
   useEffect(() => {
-    if (selectedProject) {
-      setProjectTitle(selectedProject.title);
-      setProjectFinishDate(dayjs(selectedProject.finishDate).format('YYYY-MM'));
-      setProjectRAG(selectedProject.rag);
-    } else {
-      setProjectTitle(null);
-      setProjectFinishDate(null);
-      setProjectRAG(null);
+    if (open) {
+      if (selectedProject) {
+        setEditMode(true);
+        setProjectTitle(selectedProject.title);
+        setProjectFinishDate(
+          format(new Date(selectedProject.finishDate), 'y-MM'),
+        );
+        setProjectRAG(selectedProject.rag);
+      } else {
+        setEditMode(false);
+        setProjectTitle(undefined);
+        setProjectFinishDate(format(new Date(), 'y-MM'));
+        setProjectRAG(undefined);
+      }
+      setDirty(false);
     }
-  }, [selectedProject]);
+  }, [selectedProject, open]);
 
   const [addProject] = useMutation(ADD_PROJECT);
   const [editProject] = useMutation(EDIT_PROJECT);
   const [deleteProject] = useMutation(DELETE_PROJECT);
   const [error, setError] = React.useState();
 
-  const handleNameChange = (e) => {
-    setProjectTitle(e.target.value);
+  const isSaveDisabled = () => {
+    if (isEditMode) return !isDirty;
+    return !(projectTitle && projectFinishDate && projectRag);
   };
 
-  const handleFinishDateChange = (e) => {
-    setProjectFinishDate(e.target.value);
+  const handleNameChange = (e) => {
+    setProjectTitle(e.target.value);
+    setDirty(true);
+  };
+
+  const handleFinishDateChange = (x) => {
+    setProjectFinishDate(x);
+    setDirty(true);
   };
 
   const handleRAGChange = (e) => {
     setProjectRAG(e.target.value);
+    setDirty(true);
   };
 
   const handleClose = () => {
@@ -90,6 +140,7 @@ export default function AddProject(props) {
 
   const handleDelete = async () => {
     try {
+      dispatch(setAppLoading(true));
       await deleteProject({
         variables: {
           id: parseInt(selectedProject.id, 10),
@@ -97,14 +148,17 @@ export default function AddProject(props) {
         refetchQueries: ['GetProjects'],
       });
       handleClose();
+      dispatch(setAppLoading(false));
     } catch (e) {
       setError(e);
+      dispatch(setAppLoading(false));
     }
   };
 
   const handleConfirm = async () => {
     try {
-      if (selectedProject) {
+      dispatch(setAppLoading(true));
+      if (isEditMode) {
         await editProject({
           variables: {
             id: selectedProject.id,
@@ -130,8 +184,10 @@ export default function AddProject(props) {
         });
       }
       handleClose();
+      dispatch(setAppLoading(false));
     } catch (e) {
       setError(e);
+      dispatch(setAppLoading(false));
     }
   };
 
@@ -153,9 +209,19 @@ export default function AddProject(props) {
         onClose={handleClose}
         aria-labelledby='form-dialog-title'
         fullWidth
+        style={{ zIndex: 2 }}
       >
-        <DialogTitle id='form-dialog-title'>
-          {selectedProject ? 'Edit project' : 'Add new project'}
+        <DialogTitle
+          id='form-dialog-title'
+          disableTypography
+          classes={{ root: classes.dialogTitle }}
+        >
+          <Typography variant='h6' component='h2'>
+            {isEditMode ? 'Edit project' : 'Add new project'}
+          </Typography>
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -168,21 +234,16 @@ export default function AddProject(props) {
             onChange={handleNameChange}
             variant='outlined'
           />
-          <TextField
-            InputLabelProps={{
-              classes: {
-                root: classes.finishDateLabel,
-                shrink: classes.finishDateLabelShrink,
-              },
-            }}
-            type='month'
-            margin='dense'
-            id='finish-name'
-            label='Finish date'
+          <DatePicker
             fullWidth
+            variant='inline'
+            openTo='year'
+            views={['year', 'month']}
+            label='Finish date'
+            inputVariant='outlined'
+            value={projectFinishDate}
             onChange={handleFinishDateChange}
-            value={projectFinishDate || ''}
-            variant='outlined'
+            margin='dense'
           />
           <RadioGroup
             row
@@ -191,16 +252,49 @@ export default function AddProject(props) {
             value={projectRag || ''}
             onChange={handleRAGChange}
           >
-            <FormControlLabel value='R' control={<Radio />} label='R' />
-            <FormControlLabel value='A' control={<Radio />} label='A' />
-            <FormControlLabel value='G' control={<Radio />} label='G' />
+            <FormControlLabel
+              value='R'
+              control={
+                <Radio
+                  classes={{
+                    root: classes.redRadioButton,
+                    checked: classes.checked,
+                  }}
+                />
+              }
+              label='R'
+            />
+            <FormControlLabel
+              value='A'
+              control={
+                <Radio
+                  classes={{
+                    root: classes.yellowRadioButton,
+                    checked: classes.checked,
+                  }}
+                />
+              }
+              label='A'
+            />
+            <FormControlLabel
+              value='G'
+              control={
+                <Radio
+                  classes={{
+                    root: classes.greenRadioButton,
+                    checked: classes.checked,
+                  }}
+                />
+              }
+              label='G'
+            />
           </RadioGroup>
-          <FormControl error={error}>
+          <FormControl error={!!error}>
             <FormHelperText>{error && error.message}</FormHelperText>
           </FormControl>
         </DialogContent>
         <DialogActions classes={{ root: classes.actionsRoot }}>
-          {selectedProject && (
+          {isEditMode && (
             <Button
               variant='contained'
               color='secondary'
@@ -216,6 +310,7 @@ export default function AddProject(props) {
             type='button'
             variant='contained'
             startIcon={<SaveIcon />}
+            disabled={isSaveDisabled()}
           >
             Save
           </Button>

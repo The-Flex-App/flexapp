@@ -1,36 +1,69 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useMutation } from '@apollo/client';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useMutation } from '@apollo/client';
-import { ADD_TOPIC, EDIT_TOPIC, DELETE_TOPIC } from '../../graphql/mutations';
-import { TOPICS } from '../../graphql/queries';
 import SaveIcon from '@material-ui/icons/Save';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ConfirmationDialog from '../ConfirmationDialog';
+import { ADD_TOPIC, EDIT_TOPIC, DELETE_TOPIC } from '../../graphql/mutations';
+import { setAppLoading } from '../../store/slices/app';
 
 const useStyles = makeStyles((theme) => ({
   actionsRoot: {
     padding: theme.spacing(1, 3),
   },
+  dialogTitle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 }));
 
 export default function AddTopic(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { open, onClose, selectedTopic, projectId } = props;
-  const [newTopic, setNewTopic] = React.useState(false);
+  const [isDirty, setDirty] = React.useState(false);
+  const [isEditMode, setEditMode] = React.useState(!!selectedTopic);
+  const [newTopic, setNewTopic] = React.useState(
+    selectedTopic && selectedTopic.title,
+  );
   const [openConfirmation, setOpenConfirmation] = React.useState(false);
+  const [error, setError] = React.useState();
   const [addTopic] = useMutation(ADD_TOPIC);
   const [editTopic] = useMutation(EDIT_TOPIC);
   const [deleteTopic] = useMutation(DELETE_TOPIC);
-  const [error, setError] = React.useState();
+
+  useEffect(() => {
+    if (open) {
+      if (selectedTopic) {
+        setEditMode(true);
+        setNewTopic(selectedTopic.title);
+      } else {
+        setEditMode(false);
+        setNewTopic(undefined);
+      }
+      setDirty(false);
+    }
+  }, [selectedTopic, open]);
+
+  const isSaveDisabled = () => {
+    if (isEditMode) return !isDirty;
+    return !newTopic;
+  };
 
   const handleInputChange = (e) => {
     setNewTopic(e.target.value);
+    setDirty(true);
   };
 
   const handleClose = () => {
@@ -40,7 +73,8 @@ export default function AddTopic(props) {
 
   const handleConfirm = async () => {
     try {
-      if (selectedTopic) {
+      dispatch(setAppLoading(true));
+      if (isEditMode) {
         await editTopic({
           variables: {
             id: selectedTopic.id,
@@ -49,7 +83,7 @@ export default function AddTopic(props) {
               projectId,
             },
           },
-          refetchQueries: [{ query: TOPICS, variables: { projectId } }],
+          refetchQueries: ['GetProjects'],
         });
       } else {
         await addTopic({
@@ -59,26 +93,31 @@ export default function AddTopic(props) {
               projectId,
             },
           },
-          refetchQueries: ['GetTopics'],
+          refetchQueries: ['GetProjects'],
         });
       }
       handleClose();
+      dispatch(setAppLoading(false));
     } catch (e) {
       setError(e);
+      dispatch(setAppLoading(false));
     }
   };
 
   const handleDelete = async () => {
     try {
+      dispatch(setAppLoading(true));
       await deleteTopic({
         variables: {
           id: parseInt(selectedTopic.id, 10),
         },
-        refetchQueries: ['GetTopics'],
+        refetchQueries: ['GetProjects'],
       });
       handleClose();
+      dispatch(setAppLoading(false));
     } catch (e) {
       setError(e);
+      dispatch(setAppLoading(false));
     }
   };
 
@@ -100,9 +139,19 @@ export default function AddTopic(props) {
         onClose={handleClose}
         aria-labelledby='form-dialog-title'
         fullWidth
+        style={{ zIndex: 2 }}
       >
-        <DialogTitle id='form-dialog-title'>
-          {selectedTopic ? 'Edit topic' : 'Add new topic'}
+        <DialogTitle
+          id='form-dialog-title'
+          disableTypography
+          classes={{ root: classes.dialogTitle }}
+        >
+          <Typography variant='h6' component='h2'>
+            {isEditMode ? 'Edit topic' : 'Add new topic'}
+          </Typography>
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -112,14 +161,14 @@ export default function AddTopic(props) {
             label='Topic name'
             fullWidth
             onChange={handleInputChange}
-            defaultValue={selectedTopic ? selectedTopic.title : ''}
+            value={newTopic}
             variant='outlined'
-            error={error}
+            error={!!error}
             helperText={error && error.message}
           />
         </DialogContent>
         <DialogActions classes={{ root: classes.actionsRoot }}>
-          {selectedTopic && (
+          {isEditMode && (
             <Button
               variant='contained'
               color='secondary'
@@ -135,6 +184,7 @@ export default function AddTopic(props) {
             type='button'
             variant='contained'
             startIcon={<SaveIcon />}
+            disabled={isSaveDisabled()}
           >
             Save
           </Button>

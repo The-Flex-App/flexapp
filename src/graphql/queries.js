@@ -8,6 +8,21 @@ const PROJECTS = gql`
       description
       rag
       finishDate
+      topics {
+        id
+        title
+        videos {
+          id
+          video
+          thumbnail
+          title
+          firstName
+          lastName
+          email
+          userId
+          updatedAt
+        }
+      }
     }
   }
 `;
@@ -17,23 +32,18 @@ const TOPICS = gql`
     topicsByProjectId(projectId: $projectId) {
       id
       title
+      videos {
+        id
+        video
+        thumbnail
+        title
+        firstName
+        lastName
+        email
+      }
     }
   }
 `;
-
-// const VIDEOS = gql`
-//   query GetVideos($projectId: Int) {
-//     videosByProject(
-//       projectId: $projectId
-//       orderBy: { field: "createdAt", direction: desc }
-//     ) {
-//       id
-//       video
-//       thumbnail
-//       title
-//     }
-//   }
-// `;
 
 const VIDEOS_TOPIC = gql`
   query GetVideosByTopic($projectId: Int, $topicId: Int) {
@@ -46,6 +56,9 @@ const VIDEOS_TOPIC = gql`
       video
       thumbnail
       title
+      firstName
+      lastName
+      email
     }
   }
 `;

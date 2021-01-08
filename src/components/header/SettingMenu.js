@@ -1,18 +1,17 @@
 import React, { forwardRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useMutation } from '@apollo/client';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import MenuItem from '@material-ui/core/MenuItem';
 import LinkIcon from '@material-ui/icons/Link';
-import { useSelector } from 'react-redux';
-import { useMutation } from '@apollo/client';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { copyToClipboard, getFullName } from '../../utils/misc';
 import { ADD_INVITE, REMOVE_USER_WORKSPACE } from '../../graphql/mutations';
-import Menu from './Menu';
 import { setWorkspaceMemberList } from '../../store/slices/user';
+import Menu from './Menu';
 
 const useStyles = makeStyles((theme) => ({
   buttonRoot: {

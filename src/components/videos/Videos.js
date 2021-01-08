@@ -1,17 +1,20 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useQuery } from '@apollo/client';
+import find from 'lodash/find';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import AddVideo from './AddVideo';
-import ReactPlayer from 'react-player';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
+import AddVideo from './AddVideo';
+import Video from './Video';
 import { selectCurrentTopic } from '../../store/slices/topics';
-import { VIDEOS_TOPIC } from '../../graphql/queries';
+import { getProjects } from '../../store/slices/projects';
+import { selectIsOwner, selectCurrentUserId } from '../../store/slices/user';
+import { getFullName, getDateTimeDiff } from '../../utils/misc';
 
 const useStyles = makeStyles((theme) => ({
   addVideo: {
@@ -22,55 +25,103 @@ const useStyles = makeStyles((theme) => ({
     height: 200,
     border: `1px solid ${theme.palette.grey}`,
   },
+  cardItem: {
+    width: '100%',
+    minHeight: 150,
+    border: `2px solid`,
+    borderRadius: 5,
+    padding: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    boxSizing: 'border-box',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    },
+    '&$active': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    },
+  },
+  active: {},
+  listItem: {
+    display: 'block',
+    padding: 0,
+  },
+  videoAuthor: {
+    padding: theme.spacing(0.5, 0, 1),
+  },
 }));
 
-const renderVideo = (data, handleVideoSelect) => {
-  const { video, id, title } = data;
+const RenderVideo = (props) => {
+  const classes = useStyles();
+  const {
+    id,
+    title,
+    handleVideoSelect,
+    isOwner,
+    userId,
+    currentUserId,
+    firstName,
+    lastName,
+    email,
+    updatedAt,
+    activeVideo,
+  } = props;
+  const limit = 100;
 
   const onUpdateClick = () => {
-    const url = `${process.env.REACT_APP_MEDIA_URL}/${video}`;
-    handleVideoSelect(url);
+    handleVideoSelect(props);
   };
 
   const onSettingClick = (e) => {
     e.stopPropagation();
-    const url = `${process.env.REACT_APP_MEDIA_URL}/${video}`;
-    handleVideoSelect(url);
+    handleVideoSelect({ ...props, isEdit: true });
+  };
+
+  const getContent = () => {
+    if (title.length <= limit) return title;
+    return title.substring(0, limit) + '...';
   };
 
   return (
-    <>
-      <ListItem key={id} disableGutters onClick={onUpdateClick}>
-        <Typography
-          component={'div'}
-          style={{
-            width: '100%',
-            minHeight: 150,
-            border: `1px solid`,
-            padding: '8px',
-          }}
-        >
-          <Typography>{title}</Typography>
+    <ListItem disableGutters classes={{ root: classes.listItem }}>
+      <Typography
+        component={'div'}
+        classes={{ root: classes.cardItem }}
+        className={activeVideo && id === activeVideo.id ? classes.active : ''}
+        onClick={onUpdateClick}
+      >
+        <Typography>{getContent()}</Typography>
+        {isOwner || userId === currentUserId ? (
           <Typography align='right'>
             <IconButton onClick={onSettingClick}>
               <SettingsOutlinedIcon />
             </IconButton>
           </Typography>
-        </Typography>
-      </ListItem>
-    </>
+        ) : null}
+      </Typography>
+      <Typography variant='body2' classes={{ root: classes.videoAuthor }}>
+        &lsquo;{getFullName(firstName, lastName, email)}&rsquo;{' '}
+        {getDateTimeDiff(updatedAt)}
+      </Typography>
+    </ListItem>
   );
 };
 
-const renderVideos = (data = [], handleVideoSelect) => {
-  const length = data.length;
+const renderVideos = ({ videosData = [], ...rest }) => {
+  const length = videosData.length;
 
   if (length === 0) {
     return <Typography variant='body2'>No updates found</Typography>;
   }
 
   return (
-    <List>{data.map((video) => renderVideo(video, handleVideoSelect))}</List>
+    <List>
+      {videosData.map((video, index) => (
+        <RenderVideo {...{ ...video, ...rest }} key={index} />
+      ))}
+    </List>
   );
 };
 
@@ -81,45 +132,55 @@ const renderNoUpdates = () => {
 function Videos() {
   const classes = useStyles();
   const selectedTopic = useSelector(selectCurrentTopic);
-  const { id = 0, projectId = 0 } = selectedTopic;
-  const { loading, error, data } = useQuery(VIDEOS_TOPIC, {
-    variables: {
-      projectId: parseInt(projectId, 10),
-      topicId: parseInt(id, 10),
-    },
-  });
+  const projectsData = useSelector(getProjects);
+  const isOwner = useSelector(selectIsOwner);
+  const currentUserId = useSelector(selectCurrentUserId);
+  const { id = 0, projectId = 0, videos } = selectedTopic;
+
+  const [videosData, setVideosData] = React.useState(videos);
   const [openModal, setOpenModal] = React.useState(false);
-  const [activeURL, setActiveURL] = React.useState(null);
+  const [activeVideo, setActiveVideo] = React.useState(null);
 
   useEffect(() => {
     setOpenModal(false);
-    setActiveURL(null);
-  }, [selectedTopic]);
-
-  if (loading) return 'Loading...';
-  if (error) return `Error! ${error.message}`;
+    setActiveVideo(null);
+    if (selectedTopic) {
+      const { id = 0, projectId = 0 } = selectedTopic;
+      const videos =
+        (
+          find(
+            (find(projectsData, ['id', projectId.toString()]) || {}).topics ||
+              [],
+            ['id', id.toString()],
+          ) || {}
+        ).videos || [];
+      setVideosData(videos);
+    }
+  }, [selectedTopic, projectsData]);
 
   const renderButton = () => {
     return <AddCircleIcon />;
   };
 
   const handleAddVideo = () => {
-    setActiveURL(null);
+    setActiveVideo(null);
     setOpenModal(true);
+  };
+
+  const clearActiveVideo = () => {
+    setActiveVideo(null);
   };
 
   const handleClose = () => {
     setOpenModal(false);
   };
 
-  const handleConfirm = () => {};
-
-  const handleVideoSelect = (url) => {
+  const handleVideoSelect = (activeVideo) => {
     openModal && setOpenModal(false);
-    setActiveURL(url);
+    setActiveVideo(activeVideo);
   };
 
-  return (
+  return id ? (
     <>
       <Grid container direction='row' justify='flex-start' spacing={3}>
         <Grid item xs={4}>
@@ -129,42 +190,41 @@ function Videos() {
               aria-label='add'
               color='primary'
               onClick={handleAddVideo}
-              disabled={id === 0}
               className={classes.addVideo}
             >
               {renderButton()}
             </IconButton>
           </Grid>
           {!selectedTopic && renderNoUpdates()}
-          {selectedTopic && renderVideos(data.videosByTopic, handleVideoSelect)}
+          {selectedTopic &&
+            renderVideos({
+              videosData,
+              handleVideoSelect,
+              isOwner,
+              currentUserId,
+              activeVideo,
+            })}
         </Grid>
         <Grid item xs={8}>
-          <AddVideo
-            open={openModal}
-            onClose={handleClose}
-            onConfirm={handleConfirm}
-            topicId={id}
-            projectId={projectId}
-          />
-          {activeURL && (
-            <ReactPlayer
-              url={activeURL}
-              controls
-              width='100%'
-              height='100%'
-              config={{
-                file: {
-                  attributes: {
-                    style: { height: '100%', objectFit: 'cover' },
-                  },
-                },
-              }}
+          {openModal && (
+            <AddVideo
+              onClose={handleClose}
+              topicId={id}
+              projectId={projectId}
+            />
+          )}
+          {activeVideo && (
+            <Video
+              topicId={parseInt(id, 10)}
+              projectId={projectId}
+              activeVideo={activeVideo}
+              clearActiveVideo={clearActiveVideo}
             />
           )}
         </Grid>
       </Grid>
     </>
-  );
+  ) : null;
 }
 
 export default Videos;

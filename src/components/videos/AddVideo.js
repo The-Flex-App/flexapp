@@ -1,14 +1,15 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import { useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import VideoRecorder from 'react-video-recorder';
-import TextField from '@material-ui/core/TextField';
 import { v4 as uuidv4 } from 'uuid';
+import VideoRecorder from 'react-video-recorder';
+import { useDispatch, useSelector } from 'react-redux';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { useMutation } from '@apollo/client';
 import { ADD_VIDEO } from '../../graphql/mutations';
-import { Typography } from '@material-ui/core';
 import { selectCurrentUserId } from '../../store/slices/user';
+import { setAppLoading } from '../../store/slices/app';
 
 const useStyles = makeStyles((theme) => ({
   addVideobutton: {
@@ -40,8 +41,9 @@ const getSignedUrl = (fileName, fileType = 'video') => {
 
 export default function AddVideo(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
-  const { open, onClose, projectId, topicId } = props;
+  const { onClose, projectId, topicId } = props;
   const [addVideo] = useMutation(ADD_VIDEO);
   const [recordingData, setRecordingData] = React.useState({});
   const [saveError, setSaveError] = React.useState(null);
@@ -86,6 +88,7 @@ export default function AddVideo(props) {
 
   const handleConfirm = async () => {
     try {
+      dispatch(setAppLoading(true));
       const { duration, videoBlob } = recordingData;
 
       if (!videoBlob) {
@@ -99,7 +102,7 @@ export default function AddVideo(props) {
           variables: {
             input: videoInput,
           },
-          refetchQueries: ['GetVideosByTopic'],
+          refetchQueries: ['GetProjects'],
         });
 
         if (error) {
@@ -107,6 +110,7 @@ export default function AddVideo(props) {
         } else {
           handleClose();
         }
+        dispatch(setAppLoading(false));
       };
 
       getSignedUrl(video.name, 'video').then((res) => {
@@ -141,10 +145,6 @@ export default function AddVideo(props) {
   };
 
   const { videoBlob = null } = recordingData;
-
-  if (!open) {
-    return null;
-  }
 
   return (
     <div>
