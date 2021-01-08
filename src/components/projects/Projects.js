@@ -1,5 +1,5 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -9,17 +9,21 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { makeStyles } from '@material-ui/core/styles';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import { useQuery } from '@apollo/client';
 import AddProject from './AddProject';
 
-import { useQuery } from '@apollo/client';
-import { Typography, Grid } from '@material-ui/core';
 import { PROJECTS } from '../../graphql/queries';
 import {
   selectCurrentWorkspaceId,
   selectIsOwner,
 } from '../../store/slices/user';
+import { getProjects } from '../../store/slices/projects';
 import Topics from '../topics/Topics';
 import { getfinishDateToString } from '../../utils/misc';
+import { setProjects } from '../../store/slices/projects';
+import { selectCurrentTopic } from '../../store/slices/topics';
 
 const useStyles = makeStyles((theme) => ({
   addProject: {
@@ -134,19 +138,25 @@ const useStyles = makeStyles((theme) => ({
 
 function Projects() {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const workspaceId = useSelector(selectCurrentWorkspaceId);
   const isOwner = useSelector(selectIsOwner);
+  const { projectId: activeProjectId } = useSelector(selectCurrentTopic);
+  const projectsData = useSelector(getProjects);
   const { workspaceId: activeWorkspaceId } = useParams();
 
   const { loading, error, data } = useQuery(PROJECTS, {
     variables: { workspaceId: activeWorkspaceId || workspaceId },
   });
 
+  useEffect(() => {
+    data && dispatch(setProjects(data.projectByWorkspaceId));
+  }, [data, dispatch]);
+
   const [openModal, setOpenModal] = React.useState(false);
   const [editProject, setEditProject] = React.useState(null);
 
   const handleAddProject = () => {
-    setEditProject(null);
     setOpenModal(true);
   };
 
@@ -191,7 +201,7 @@ function Projects() {
   };
 
   const renderProject = (project) => {
-    const { title, finishDate, rag, id } = project;
+    const { title, finishDate, rag, id, topics } = project;
 
     return (
       <Accordion
@@ -204,6 +214,9 @@ function Projects() {
             content: classes.content,
             expanded: classes.expanded,
           }}
+          className={
+            activeProjectId === parseInt(id, 10) ? classes.expanded : ''
+          }
           aria-controls='panel1a-content'
           id='panel1a-header'
         >
@@ -226,7 +239,7 @@ function Projects() {
           </Typography>
         </AccordionSummary>
         <AccordionDetails classes={{ root: classes.accordionDetailsRoot }}>
-          <Topics projectId={id} />
+          <Topics projectId={id} topics={topics} />
         </AccordionDetails>
       </Accordion>
     );
@@ -241,7 +254,11 @@ function Projects() {
 
     return (
       <React.Fragment>
-        <Typography variant='body2' className={classes.projectCaptionWrapper}>
+        <Typography
+          variant='body2'
+          component={'div'}
+          className={classes.projectCaptionWrapper}
+        >
           <div className={classes.dragHandle}>&nbsp;</div>
           <div className={classes.projectTitle}>priority</div>
           <div className={classes.finishDate}>finish date</div>
@@ -281,7 +298,7 @@ function Projects() {
           </Grid>
         )}
       </Grid>
-      {renderProjects(data.projectByWorkspaceId)}
+      {renderProjects(projectsData)}
     </>
   );
 }

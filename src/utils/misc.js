@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { format, formatDistanceToNow } from 'date-fns';
 
 export const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text);
@@ -17,6 +17,11 @@ export const getFullName = (firstName, lastName, defaultName = '') => {
 };
 
 export const getfinishDateToString = (date) => {
-  if (!date) return null;
-  return dayjs(date).format("MMM 'YY");
+  return date ? format(new Date(date), 'MMM ’yy') : null;
+};
+
+export const getDateTimeDiff = (date) => {
+  return date
+    ? formatDistanceToNow(new Date(new Date(date).toISOString()))
+    : null;
 };

@@ -3,8 +3,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import UserInfo from './UserInfo';
 import { makeStyles } from '@material-ui/core/styles';
+import UserInfo from './UserInfo';
 
 const useStyles = makeStyles((theme) => ({
   root: {

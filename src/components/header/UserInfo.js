@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import UserContext from '../../utils/userContext';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import UserContext from '../../utils/userContext';
 import SettingMenu from './SettingMenu';
 import WorkspaceMenu from './WorkspaceMenu';
 
