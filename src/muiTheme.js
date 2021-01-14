@@ -6,9 +6,6 @@ let theme = createMuiTheme({
     fontSize: 13.333,
   },
   palette: {
-    text: {
-      primary: '#0199ad',
-    },
     primary: {
       main: '#0199ad',
     },

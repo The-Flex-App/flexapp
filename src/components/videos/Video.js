@@ -12,6 +12,7 @@ import { DELETE_VIDEO, EDIT_VIDEO } from '../../graphql/mutations';
 import { selectCurrentUserId } from '../../store/slices/user';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { setAppLoading } from '../../store/slices/app';
+import { VIDEOS_TOPIC } from '../../graphql/queries';
 
 const useStyles = makeStyles((theme) => ({
   addVideobutton: {
@@ -54,7 +55,12 @@ export default function Video(props) {
         variables: {
           id,
         },
-        refetchQueries: ['GetProjects'],
+        refetchQueries: [
+          {
+            query: VIDEOS_TOPIC,
+            variables: { projectId, topicId },
+          },
+        ],
       });
       clearActiveVideo();
       dispatch(setAppLoading(false));
@@ -78,7 +84,12 @@ export default function Video(props) {
             userId,
           },
         },
-        refetchQueries: ['GetProjects'],
+        refetchQueries: [
+          {
+            query: VIDEOS_TOPIC,
+            variables: { projectId, topicId },
+          },
+        ],
       });
       dispatch(setAppLoading(false));
     } catch (e) {
