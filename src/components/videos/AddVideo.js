@@ -10,6 +10,7 @@ import { useMutation } from '@apollo/client';
 import { ADD_VIDEO } from '../../graphql/mutations';
 import { selectCurrentUserId } from '../../store/slices/user';
 import { setAppLoading } from '../../store/slices/app';
+import { VIDEOS_TOPIC } from '../../graphql/queries';
 
 const useStyles = makeStyles((theme) => ({
   addVideobutton: {
@@ -29,7 +30,7 @@ const getSignedUrl = (fileName, fileType = 'video') => {
   return fetch(
     `${process.env.REACT_APP_API_ENDPOINT}/signed-url?` +
       new URLSearchParams(opts),
-    {},
+    {}
   )
     .then(function (response) {
       return response.json();
@@ -58,13 +59,13 @@ export default function AddVideo(props) {
   };
 
   const blobToFile = (theBlob, fileName) => {
-    const fileType = theBlob.type;
-    const fileExtension = fileType.split('/')[1].split(';')[0];
+    const fileExtension = 'mp4';
     const name = fileName || `${uuidv4()}.${fileExtension}`;
-    return new File([theBlob], name, {
+    const file = new File([theBlob], name, {
       lastModified: new Date().getTime(),
-      type: theBlob.type,
+      type: 'video/mp4',
     });
+    return file;
   };
 
   const uploadFileToS3 = (presignedPostData, file) => {
@@ -102,7 +103,12 @@ export default function AddVideo(props) {
           variables: {
             input: videoInput,
           },
-          refetchQueries: ['GetProjects'],
+          refetchQueries: [
+            {
+              query: VIDEOS_TOPIC,
+              variables: { projectId, topicId },
+            },
+          ],
         });
 
         if (error) {
@@ -118,9 +124,9 @@ export default function AddVideo(props) {
 
         uploadFileToS3(res.form, video).then(() => {
           const videoInput = {
-            projectId: parseInt(projectId, 10),
+            projectId,
             userId,
-            topicId: parseInt(topicId, 10),
+            topicId,
             duration,
             title: videoTitle,
             video: videoKey,
@@ -159,7 +165,7 @@ export default function AddVideo(props) {
             videoBlob,
             startedAt,
             thumbnailBlob,
-            duration,
+            duration
           ) => {
             // Do something with the video...
             setRecordingData({

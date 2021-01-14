@@ -29,6 +29,10 @@ import {
 import { selectCurrentWorkspaceId } from '../../store/slices/user';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { setAppLoading } from '../../store/slices/app';
+import {
+  selectCurrentTopic,
+  setSelectedTopic,
+} from '../../store/slices/topics';
 
 const useStyles = makeStyles((theme) => ({
   dialogTitle: {
@@ -75,6 +79,7 @@ export default function AddProject(props) {
   const dispatch = useDispatch();
   const { open, onClose, selectedProject } = props;
   const workspaceId = useSelector(selectCurrentWorkspaceId);
+  const { projectId: activeProjectId } = useSelector(selectCurrentTopic);
   const { workspaceId: activeWorkspaceId } = useParams();
   const [isEditMode, setEditMode] = React.useState(!!selectedProject);
   const [isDirty, setDirty] = React.useState(false);
@@ -149,6 +154,9 @@ export default function AddProject(props) {
       });
       handleClose();
       dispatch(setAppLoading(false));
+      if (parseInt(selectedProject.id, 10) === activeProjectId) {
+        dispatch(setSelectedTopic(null));
+      }
     } catch (e) {
       setError(e);
       dispatch(setAppLoading(false));

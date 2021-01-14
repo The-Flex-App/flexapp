@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Auth, Hub } from 'aws-amplify';
+import { useMutation } from '@apollo/client';
 import { useParams, useHistory } from 'react-router-dom';
+import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import useAuthentication from './utils/useAuthentication';
 import { UserProvider } from './utils/userContext';
 import { selectCurrentUserId, setUser } from './store/slices/user';
 import App from './App';
 import { ADD_USER } from './graphql/mutations';
-import { useMutation } from '@apollo/client';
 
 // https://aws-amplify.github.io/docs/js/hub
 Hub.listen(/.*/, ({ channel, payload }) =>
-  console.debug(`[hub::${channel}::${payload.event}]`, payload)
+  console.debug(`[hub::${channel}::${payload.event}]`, payload),
 );
 
 // https://aws-amplify.github.io/docs/js/authentication#manual-setup
@@ -100,7 +102,7 @@ const AppWithAuth = () => {
               ...(response.data.createUser || {}),
               id: userId,
               isOwner: !workspaceId || response.workspaceId === workspaceId,
-            })
+            }),
           );
         })
         .catch((e) => {
@@ -125,7 +127,16 @@ const AppWithAuth = () => {
     );
   }
 
-  return null;
+  return (
+    <Grid
+      container
+      alignItems={'center'}
+      justify={'center'}
+      style={{ height: `calc(100vh - 16px)` }}
+    >
+      <CircularProgress color={'inherit'} />
+    </Grid>
+  );
 };
 
 export default AppWithAuth;

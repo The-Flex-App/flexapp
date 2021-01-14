@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -16,6 +16,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { ADD_TOPIC, EDIT_TOPIC, DELETE_TOPIC } from '../../graphql/mutations';
 import { setAppLoading } from '../../store/slices/app';
+import {
+  selectCurrentTopic,
+  setSelectedTopic,
+} from '../../store/slices/topics';
 
 const useStyles = makeStyles((theme) => ({
   actionsRoot: {
@@ -31,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AddTopic(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const { id: activeTopicId } = useSelector(selectCurrentTopic);
   const { open, onClose, selectedTopic, projectId } = props;
   const [isDirty, setDirty] = React.useState(false);
   const [isEditMode, setEditMode] = React.useState(!!selectedTopic);
@@ -115,6 +120,9 @@ export default function AddTopic(props) {
       });
       handleClose();
       dispatch(setAppLoading(false));
+      if (selectedTopic.id === activeTopicId) {
+        dispatch(setSelectedTopic(null));
+      }
     } catch (e) {
       setError(e);
       dispatch(setAppLoading(false));

@@ -11,17 +11,6 @@ const PROJECTS = gql`
       topics {
         id
         title
-        videos {
-          id
-          video
-          thumbnail
-          title
-          firstName
-          lastName
-          email
-          userId
-          updatedAt
-        }
       }
     }
   }
@@ -59,6 +48,8 @@ const VIDEOS_TOPIC = gql`
       firstName
       lastName
       email
+      userId
+      updatedAt
     }
   }
 `;

@@ -132,7 +132,7 @@ export default function WorkspaceMenu(props) {
 
   const workspaceList = [
     { firstName, lastName, email, workspaceId },
-    ...workspaces,
+    ...(workspaces || []),
   ];
 
   const [removeUserWorkspace] = useMutation(REMOVE_USER_WORKSPACE);
@@ -154,6 +154,10 @@ export default function WorkspaceMenu(props) {
         console.error(e);
       });
   };
+
+  if (!workspaces) {
+    return null;
+  }
 
   return (
     <Menu

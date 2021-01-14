@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import find from 'lodash/find';
+import { useQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -12,9 +12,9 @@ import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import AddVideo from './AddVideo';
 import Video from './Video';
 import { selectCurrentTopic } from '../../store/slices/topics';
-import { getProjects } from '../../store/slices/projects';
 import { selectIsOwner, selectCurrentUserId } from '../../store/slices/user';
 import { getFullName, getDateTimeDiff } from '../../utils/misc';
+import { VIDEOS_TOPIC } from '../../graphql/queries';
 
 const useStyles = makeStyles((theme) => ({
   addVideo: {
@@ -132,31 +132,25 @@ const renderNoUpdates = () => {
 function Videos() {
   const classes = useStyles();
   const selectedTopic = useSelector(selectCurrentTopic);
-  const projectsData = useSelector(getProjects);
   const isOwner = useSelector(selectIsOwner);
   const currentUserId = useSelector(selectCurrentUserId);
-  const { id = 0, projectId = 0, videos } = selectedTopic;
+  const { id, projectId } = selectedTopic;
 
-  const [videosData, setVideosData] = React.useState(videos);
   const [openModal, setOpenModal] = React.useState(false);
   const [activeVideo, setActiveVideo] = React.useState(null);
+
+  const { loading, error, data } = useQuery(VIDEOS_TOPIC, {
+    variables: {
+      projectId: parseInt(projectId, 10),
+      topicId: parseInt(id, 10),
+    },
+    skip: !id || !projectId,
+  });
 
   useEffect(() => {
     setOpenModal(false);
     setActiveVideo(null);
-    if (selectedTopic) {
-      const { id = 0, projectId = 0 } = selectedTopic;
-      const videos =
-        (
-          find(
-            (find(projectsData, ['id', projectId.toString()]) || {}).topics ||
-              [],
-            ['id', id.toString()],
-          ) || {}
-        ).videos || [];
-      setVideosData(videos);
-    }
-  }, [selectedTopic, projectsData]);
+  }, [selectedTopic]);
 
   const renderButton = () => {
     return <AddCircleIcon />;
@@ -180,50 +174,51 @@ function Videos() {
     setActiveVideo(activeVideo);
   };
 
+  if (loading) return 'Loading...';
+  if (error) return `Error! ${error.message}`;
+
   return id ? (
-    <>
-      <Grid container direction='row' justify='flex-start' spacing={3}>
-        <Grid item xs={4}>
-          <Grid container alignItems='center' className='page-title'>
-            <Typography variant='h5'>Updates</Typography>
-            <IconButton
-              aria-label='add'
-              color='primary'
-              onClick={handleAddVideo}
-              className={classes.addVideo}
-            >
-              {renderButton()}
-            </IconButton>
-          </Grid>
-          {!selectedTopic && renderNoUpdates()}
-          {selectedTopic &&
-            renderVideos({
-              videosData,
-              handleVideoSelect,
-              isOwner,
-              currentUserId,
-              activeVideo,
-            })}
+    <Grid container direction='row' justify='flex-start' spacing={3}>
+      <Grid item xs={4}>
+        <Grid container alignItems='center' className='page-title'>
+          <Typography variant='h5'>Updates</Typography>
+          <IconButton
+            aria-label='add'
+            color='primary'
+            onClick={handleAddVideo}
+            className={classes.addVideo}
+          >
+            {renderButton()}
+          </IconButton>
         </Grid>
-        <Grid item xs={8}>
-          {openModal && (
-            <AddVideo
-              onClose={handleClose}
-              topicId={id}
-              projectId={projectId}
-            />
-          )}
-          {activeVideo && (
-            <Video
-              topicId={parseInt(id, 10)}
-              projectId={projectId}
-              activeVideo={activeVideo}
-              clearActiveVideo={clearActiveVideo}
-            />
-          )}
-        </Grid>
+        {!selectedTopic && renderNoUpdates()}
+        {selectedTopic &&
+          renderVideos({
+            videosData: data.videosByTopic,
+            handleVideoSelect,
+            isOwner,
+            currentUserId,
+            activeVideo,
+          })}
       </Grid>
-    </>
+      <Grid item xs={8}>
+        {openModal && (
+          <AddVideo
+            onClose={handleClose}
+            projectId={parseInt(projectId, 10)}
+            topicId={parseInt(id, 10)}
+          />
+        )}
+        {activeVideo && (
+          <Video
+            projectId={parseInt(projectId, 10)}
+            topicId={parseInt(id, 10)}
+            activeVideo={activeVideo}
+            clearActiveVideo={clearActiveVideo}
+          />
+        )}
+      </Grid>
+    </Grid>
   ) : null;
 }
 
