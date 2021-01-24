@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   svgIcon: {
     verticalAlign: 'middle',
+    fontSize: 18,
   },
   dragHandle: {
     width: 40,
@@ -90,7 +91,7 @@ function Topics(props) {
 
   const handleTopicSelected = (topic) => {
     dispatch(
-      setSelectedTopic({ ...topic, projectId: parseInt(projectId, 10) }),
+      setSelectedTopic({ ...topic, projectId: parseInt(projectId, 10) })
     );
   };
 
