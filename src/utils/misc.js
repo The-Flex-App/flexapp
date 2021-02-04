@@ -1,4 +1,5 @@
-import { format, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
+import timeAgo from 'time-ago';
 
 export const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text);
@@ -21,7 +22,5 @@ export const getfinishDateToString = (date) => {
 };
 
 export const getDateTimeDiff = (date) => {
-  return date
-    ? formatDistanceToNow(new Date(new Date(date).toISOString()))
-    : null;
+  return date ? timeAgo.ago(new Date(new Date(date).toISOString())) : null;
 };
