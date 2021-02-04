@@ -49,6 +49,7 @@ const VIDEOS_TOPIC = gql`
       lastName
       email
       userId
+      createdAt
       updatedAt
     }
   }

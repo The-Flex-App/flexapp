@@ -8,6 +8,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import VideoThumbnail from 'react-video-thumbnail';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import AddVideo from './AddVideo';
 import Video from './Video';
@@ -20,21 +21,9 @@ const useStyles = makeStyles((theme) => ({
   addVideo: {
     marginLeft: theme.spacing(1),
   },
-  updateCard: {
-    width: '100%',
-    height: 200,
-    border: `1px solid ${theme.palette.grey}`,
-  },
-  cardItem: {
-    width: '100%',
-    minHeight: 150,
-    border: `2px solid`,
+  cardItemWrap: {
+    border: `2px solid rgba(0, 0, 0, 0.54)`,
     borderRadius: 5,
-    padding: '16px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    boxSizing: 'border-box',
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.04)',
@@ -43,6 +32,26 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: 'rgba(0, 0, 0, 0.04)',
     },
   },
+  thumbnaiWrap: {
+    width: '100%',
+    height: 150,
+    overflow: 'hidden',
+    '& img': {
+      width: '100%',
+      height: 150,
+      verticalAlign: 'middle',
+    },
+  },
+  cardItem: {
+    width: '100%',
+    minHeight: 100,
+    padding: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    boxSizing: 'border-box',
+    overflowWrap: 'break-word',
+  },
   active: {},
   listItem: {
     display: 'block',
@@ -50,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
   videoAuthor: {
     padding: theme.spacing(0.5, 0, 1),
+    fontSize: 12,
   },
 }));
 
@@ -65,7 +75,8 @@ const RenderVideo = (props) => {
     firstName,
     lastName,
     email,
-    updatedAt,
+    createdAt,
+    video,
     activeVideo,
   } = props;
   const limit = 100;
@@ -84,26 +95,37 @@ const RenderVideo = (props) => {
     return title.substring(0, limit) + '...';
   };
 
+  const activeVideoURL = `${process.env.REACT_APP_MEDIA_URL}/${video}`;
+
   return (
     <ListItem disableGutters classes={{ root: classes.listItem }}>
       <Typography
         component={'div'}
-        classes={{ root: classes.cardItem }}
+        classes={{ root: classes.cardItemWrap }}
         className={activeVideo && id === activeVideo.id ? classes.active : ''}
         onClick={onUpdateClick}
       >
-        <Typography>{getContent()}</Typography>
-        {isOwner || userId === currentUserId ? (
-          <Typography align='right'>
-            <IconButton onClick={onSettingClick}>
-              <SettingsOutlinedIcon />
-            </IconButton>
-          </Typography>
-        ) : null}
+        <Typography component={'div'} classes={{ root: classes.thumbnaiWrap }}>
+          <VideoThumbnail
+            videoUrl={activeVideoURL}
+            snapshotAtTime={1}
+            height={150}
+          />
+        </Typography>
+        <Typography component={'div'} classes={{ root: classes.cardItem }}>
+          <Typography>{getContent()}</Typography>
+          {isOwner || userId === currentUserId ? (
+            <Typography align='right'>
+              <IconButton onClick={onSettingClick}>
+                <SettingsOutlinedIcon />
+              </IconButton>
+            </Typography>
+          ) : null}
+        </Typography>
       </Typography>
       <Typography variant='body2' classes={{ root: classes.videoAuthor }}>
-        &lsquo;{getFullName(firstName, lastName, email)}&rsquo;{' '}
-        {getDateTimeDiff(updatedAt)}
+        Created by &lsquo;{getFullName(firstName, lastName, email)}&rsquo;{' '}
+        {getDateTimeDiff(createdAt)}
       </Typography>
     </ListItem>
   );
