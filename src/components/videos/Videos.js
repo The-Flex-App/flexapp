@@ -5,11 +5,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import VideoThumbnail from 'react-video-thumbnail';
+import AddIcon from '@material-ui/icons/Add';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import AddVideo from './AddVideo';
 import Video from './Video';
 import { selectCurrentTopic } from '../../store/slices/topics';
@@ -18,39 +19,57 @@ import { getFullName, getDateTimeDiff } from '../../utils/misc';
 import { VIDEOS_TOPIC } from '../../graphql/queries';
 
 const useStyles = makeStyles((theme) => ({
-  addVideo: {
-    marginLeft: theme.spacing(1),
+  updatesWrapper: {
+    minWidth: 250,
+    padding: theme.spacing(3, 2, 0, 3),
   },
-  cardItemWrap: {
-    border: `2px solid rgba(0, 0, 0, 0.54)`,
-    borderRadius: 5,
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
-    '&$active': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
+  videoContainer: {
+    padding: theme.spacing(3, 0),
   },
-  thumbnaiWrap: {
-    width: '100%',
-    height: 150,
-    overflow: 'hidden',
-    '& img': {
-      width: '100%',
-      height: 150,
-      verticalAlign: 'middle',
-    },
+  videoList: {
+    overflowY: 'auto',
+    maxHeight: `calc(100vh - 200px)`,
+    paddingRight: theme.spacing(1),
   },
+  addVideo: {},
   cardItem: {
     width: '100%',
-    minHeight: 100,
-    padding: '16px',
+    minHeight: 120,
+    padding: 0,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
     boxSizing: 'border-box',
     overflowWrap: 'break-word',
+    border: `1px solid #444`,
+    boxShadow: `inset 0 0 2px #444`,
+    cursor: 'pointer',
+    borderRadius: 0,
+    '&:hover': {
+      // backgroundColor: 'rgba(0, 0, 0, 0.04)',
+      backgroundColor: fade(theme.palette.primary.main, 0.04),
+    },
+    '&$active': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+      },
+    },
+    '&$addVideo': {
+      justifyContent: 'center',
+      alignItems: 'center',
+      color: theme.palette.primary.main,
+      boxShadow: `inset 0 0 2px ${theme.palette.primary.main}`,
+      borderColor: theme.palette.primary.main,
+      marginTop: theme.spacing(1),
+      '&:hover': {
+        backgroundColor: fade(theme.palette.primary.main, 0.04),
+      },
+      '& svg': {
+        fontSize: 25,
+      },
+    },
   },
   active: {},
   listItem: {
@@ -60,6 +79,29 @@ const useStyles = makeStyles((theme) => ({
   videoAuthor: {
     padding: theme.spacing(0.5, 0, 1),
     fontSize: 12,
+    fontWeight: 'bold',
+  },
+  cardContent: {
+    padding: theme.spacing(2, 2, 1.5),
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: 120,
+    boxSizing: 'border-box',
+    '&:last-child': {
+      paddingBottom: theme.spacing(1.5),
+    },
+  },
+  thumbContent: {
+    fontWeight: 'bold',
+    display: '-webkit-box',
+    '-webkit-line-clamp': 3,
+    '-webkit-box-orient': 'vertical',
+    overflow: 'hidden',
+    marginBottom: theme.spacing(0.5),
+    flex: 1,
+  },
+  settingButton: {
+    padding: 3,
   },
 }));
 
@@ -76,10 +118,8 @@ const RenderVideo = (props) => {
     lastName,
     email,
     createdAt,
-    video,
     activeVideo,
   } = props;
-  const limit = 100;
 
   const onUpdateClick = () => {
     handleVideoSelect(props);
@@ -90,44 +130,32 @@ const RenderVideo = (props) => {
     handleVideoSelect({ ...props, isEdit: true });
   };
 
-  const getContent = () => {
-    if (title.length <= limit) return title;
-    return title.substring(0, limit) + '...';
-  };
-
-  const activeVideoURL = `${process.env.REACT_APP_MEDIA_URL}/${video}`;
-
   return (
-    <ListItem disableGutters classes={{ root: classes.listItem }}>
-      <Typography
-        component={'div'}
-        classes={{ root: classes.cardItemWrap }}
+    <React.Fragment>
+      <Card
+        classes={{ root: classes.cardItem }}
         className={activeVideo && id === activeVideo.id ? classes.active : ''}
         onClick={onUpdateClick}
       >
-        <Typography component={'div'} classes={{ root: classes.thumbnaiWrap }}>
-          <VideoThumbnail
-            videoUrl={activeVideoURL}
-            snapshotAtTime={1}
-            height={150}
-          />
-        </Typography>
-        <Typography component={'div'} classes={{ root: classes.cardItem }}>
-          <Typography>{getContent()}</Typography>
+        <CardContent className={classes.cardContent}>
+          <Typography className={classes.thumbContent}>{title}</Typography>
           {isOwner || userId === currentUserId ? (
             <Typography align='right'>
-              <IconButton onClick={onSettingClick}>
+              <IconButton
+                className={classes.settingButton}
+                onClick={onSettingClick}
+              >
                 <SettingsOutlinedIcon />
               </IconButton>
             </Typography>
           ) : null}
-        </Typography>
-      </Typography>
+        </CardContent>
+      </Card>
       <Typography variant='body2' classes={{ root: classes.videoAuthor }}>
-        Created by &lsquo;{getFullName(firstName, lastName, email)}&rsquo;{' '}
+        {getFullName(firstName, lastName, email)} &nbsp;
         {getDateTimeDiff(createdAt)}
       </Typography>
-    </ListItem>
+    </React.Fragment>
   );
 };
 
@@ -135,7 +163,11 @@ const renderVideos = ({ videosData = [], ...rest }) => {
   const length = videosData.length;
 
   if (length === 0) {
-    return <Typography variant='body2'>No updates found</Typography>;
+    return (
+      <Typography variant='body2' component='em'>
+        No updates found
+      </Typography>
+    );
   }
 
   return (
@@ -174,10 +206,6 @@ function Videos() {
     setActiveVideo(null);
   }, [selectedTopic]);
 
-  const renderButton = () => {
-    return <AddCircleIcon />;
-  };
-
   const handleAddVideo = () => {
     setActiveVideo(null);
     setOpenModal(true);
@@ -200,30 +228,32 @@ function Videos() {
   if (error) return `Error! ${error.message}`;
 
   return id ? (
-    <Grid container direction='row' justify='flex-start' spacing={3}>
-      <Grid item xs={4}>
+    <Grid container direction='row' justify='flex-start'>
+      <Grid item xs={2} className={classes.updatesWrapper}>
         <Grid container alignItems='center' className='page-title'>
           <Typography variant='h5'>Updates</Typography>
-          <IconButton
-            aria-label='add'
-            color='primary'
-            onClick={handleAddVideo}
-            className={classes.addVideo}
-          >
-            {renderButton()}
-          </IconButton>
         </Grid>
-        {!selectedTopic && renderNoUpdates()}
-        {selectedTopic &&
-          renderVideos({
-            videosData: data.videosByTopic,
-            handleVideoSelect,
-            isOwner,
-            currentUserId,
-            activeVideo,
-          })}
+        <Typography component='div' className={classes.videoList}>
+          <Card
+            component={'div'}
+            classes={{ root: classes.cardItem }}
+            className={classes.addVideo}
+            onClick={handleAddVideo}
+          >
+            <AddIcon />
+          </Card>
+          {!selectedTopic && renderNoUpdates()}
+          {selectedTopic &&
+            renderVideos({
+              videosData: data.videosByTopic,
+              handleVideoSelect,
+              isOwner,
+              currentUserId,
+              activeVideo,
+            })}
+        </Typography>
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={6} className={classes.videoContainer}>
         {openModal && (
           <AddVideo
             onClose={handleClose}

@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import timeAgo from 'time-ago';
 
 export const copyToClipboard = (text) => {
@@ -15,10 +14,6 @@ export const getFullName = (firstName, lastName, defaultName = '') => {
   let result = firstName ? `${firstName} ` : '';
   result += lastName ? lastName : '';
   return result || defaultName;
-};
-
-export const getfinishDateToString = (date) => {
-  return date ? format(new Date(date), 'MMM ’yy') : null;
 };
 
 export const getDateTimeDiff = (date) => {

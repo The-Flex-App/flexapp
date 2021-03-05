@@ -13,6 +13,11 @@ import { setAppLoading } from '../../store/slices/app';
 import { VIDEOS_TOPIC } from '../../graphql/queries';
 
 const useStyles = makeStyles((theme) => ({
+  videoWrapper: {
+    '& .SVGInline': {
+      display: 'none',
+    },
+  },
   addVideobutton: {
     marginLeft: theme.spacing(1),
   },
@@ -154,7 +159,7 @@ export default function AddVideo(props) {
 
   return (
     <div>
-      <Typography component='div'>
+      <Typography component='div' className={classes.videoWrapper}>
         {renderErrors()}
         <VideoRecorder
           timeLimit={120000}

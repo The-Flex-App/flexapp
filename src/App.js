@@ -8,14 +8,14 @@ import Copyright from './components/Copyright';
 
 function App() {
   return (
-    <Grid container>
+    <Grid container spacing={0}>
       <Grid item xs={12}>
         <ButtonAppBar />
       </Grid>
-      <Grid item xs={3} className='project-list'>
+      <Grid item xs={2} className='project-list'>
         <Projects />
       </Grid>
-      <Grid item xs={9} className='videos-list'>
+      <Grid container xs={10} className='videos-list'>
         <Videos />
       </Grid>
       <Grid item xs={12}>

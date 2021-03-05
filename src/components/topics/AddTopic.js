@@ -22,9 +22,6 @@ import {
 } from '../../store/slices/topics';
 
 const useStyles = makeStyles((theme) => ({
-  actionsRoot: {
-    padding: theme.spacing(1, 3),
-  },
   dialogTitle: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -40,7 +37,7 @@ export default function AddTopic(props) {
   const [isDirty, setDirty] = React.useState(false);
   const [isEditMode, setEditMode] = React.useState(!!selectedTopic);
   const [newTopic, setNewTopic] = React.useState(
-    selectedTopic && selectedTopic.title,
+    selectedTopic && selectedTopic.title
   );
   const [openConfirmation, setOpenConfirmation] = React.useState(false);
   const [error, setError] = React.useState();
@@ -148,6 +145,7 @@ export default function AddTopic(props) {
         aria-labelledby='form-dialog-title'
         fullWidth
         style={{ zIndex: 2 }}
+        maxWidth='xs'
       >
         <DialogTitle
           id='form-dialog-title'
@@ -155,7 +153,7 @@ export default function AddTopic(props) {
           classes={{ root: classes.dialogTitle }}
         >
           <Typography variant='h6' component='h2'>
-            {isEditMode ? 'Edit topic' : 'Add new topic'}
+            {isEditMode ? 'Edit activity' : 'Add new activity'}
           </Typography>
           <IconButton onClick={onClose}>
             <CloseIcon />
@@ -166,7 +164,7 @@ export default function AddTopic(props) {
             autoFocus
             margin='dense'
             id='name'
-            label='Topic name'
+            label='Activity name'
             fullWidth
             onChange={handleInputChange}
             value={newTopic}
@@ -175,7 +173,7 @@ export default function AddTopic(props) {
             helperText={error && error.message}
           />
         </DialogContent>
-        <DialogActions classes={{ root: classes.actionsRoot }}>
+        <DialogActions>
           {isEditMode && (
             <Button
               variant='contained'
@@ -202,7 +200,7 @@ export default function AddTopic(props) {
         onClose={onConfirmationClose}
         open={openConfirmation}
         description={
-          'Press "OK" to delete selected topic or press "CANCEL" to discard delete operation.'
+          'Press "OK" to delete selected activity or press "CANCEL" to discard delete operation.'
         }
       />
     </div>

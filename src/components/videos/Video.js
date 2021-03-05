@@ -100,7 +100,6 @@ export default function Video(props) {
 
   const renderErrors = () => {
     if (!saveError) return null;
-    console.log(saveError);
     return <p>{saveError.message}</p>;
   };
 
@@ -125,7 +124,11 @@ export default function Video(props) {
           config={{
             file: {
               attributes: {
-                style: { width: '100%', objectFit: 'cover' },
+                controlsList: 'nodownload',
+                style: {
+                  width: '100%',
+                  objectFit: 'cover',
+                },
               },
             },
           }}

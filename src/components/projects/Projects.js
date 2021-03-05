@@ -2,15 +2,15 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import AddCircleIcon from '@material-ui/icons/AddCircleOutline';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { makeStyles } from '@material-ui/core/styles';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Draggable from 'react-draggable';
 import { useQuery } from '@apollo/client';
 import AddProject from './AddProject';
 
@@ -21,13 +21,32 @@ import {
 } from '../../store/slices/user';
 import { getProjects } from '../../store/slices/projects';
 import Topics from '../topics/Topics';
-import { getfinishDateToString } from '../../utils/misc';
 import { setProjects } from '../../store/slices/projects';
 import { selectCurrentTopic } from '../../store/slices/topics';
 
 const useStyles = makeStyles((theme) => ({
+  noGoalFound: {
+    padding: theme.spacing(0, 0.5),
+    height: 25,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  projectHeadingWrap: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing(0.5),
+    padding: theme.spacing(0, 0.5),
+  },
+  projectHeading: {
+    fontSize: 18,
+    marginLeft: 25,
+  },
   addProject: {
-    marginLeft: theme.spacing(1),
+    color: theme.palette.common.white,
+    padding: 0,
+    '& svg': {
+      fontSize: 22,
+    },
   },
   projectCaptionWrapper: {
     display: 'flex',
@@ -36,8 +55,9 @@ const useStyles = makeStyles((theme) => ({
   projectTitleWrapper: {
     display: 'flex',
     width: '100%',
+    height: 35,
     alignItems: 'center',
-    color: theme.palette.common.black,
+    padding: theme.spacing(0, 0.5),
 
     '& $ragIcon': {
       fontSize: '80%',
@@ -52,36 +72,25 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   svgIcon: {
-    verticalAlign: 'middle',
+    fontSize: 15,
   },
   dragHandle: {
-    width: 40,
-    textAlign: 'center',
+    width: 25,
   },
   projectTitle: {
     flex: 1,
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-    padding: theme.spacing(0, 1),
-  },
-  finishDate: {
-    width: 100,
-    padding: theme.spacing(0, 1),
-    boxSizing: 'border-box',
-  },
-  rag: {
-    width: 50,
-    textAlign: 'center',
   },
   ragIcon: {
-    width: 30,
-    height: 30,
-    lineHeight: '30px',
+    width: 18,
+    height: 18,
     display: 'inline-block',
     boxSizing: 'border-box',
     textAlign: 'center',
-    borderRadius: 20,
+    borderRadius: 10,
+    marginLeft: theme.spacing(1),
   },
   ragRIcon: {
     backgroundColor: 'red',
@@ -93,13 +102,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#0ca789',
     color: theme.palette.common.white,
   },
-  edit: {
-    width: 50,
-    textAlign: 'center',
+  editButton: {
+    padding: 4,
+    marginLeft: theme.spacing(1),
   },
   root: {
     padding: 0,
     boxShadow: 'none',
+    background: 'transparent',
     '&:before': {
       display: 'none',
     },
@@ -108,15 +118,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   summaryRoot: {
-    padding: theme.spacing(0, 1),
-    minHeight: 50,
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
+    padding: 0,
+    minHeight: 25,
     '&$expanded': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
       margin: '0 auto',
-      minHeight: 50,
+      minHeight: 25,
     },
   },
   content: {
@@ -132,7 +138,6 @@ const useStyles = makeStyles((theme) => ({
   accordionDetailsRoot: {
     display: 'block',
     padding: 0,
-    paddingLeft: theme.spacing(4),
   },
 }));
 
@@ -176,32 +181,20 @@ function Projects() {
   };
 
   const renderRAG = (rag) => {
-    switch (rag) {
-      case 'R':
-        return (
-          <div className={classes.rag}>
-            <span className={`${classes.ragIcon} ${classes.ragRIcon}`}>R</span>
-          </div>
-        );
-      case 'A':
-        return (
-          <div className={classes.rag}>
-            <span className={`${classes.ragIcon} ${classes.ragAIcon}`}>A</span>
-          </div>
-        );
-      case 'G':
-        return (
-          <div className={classes.rag}>
-            <span className={`${classes.ragIcon} ${classes.ragGIcon}`}>G</span>
-          </div>
-        );
-      default:
-        return null;
-    }
+    const ragClassName =
+      rag === 'R'
+        ? classes.ragRIcon
+        : rag === 'A'
+        ? classes.ragAIcon
+        : rag === 'G'
+        ? classes.ragGIcon
+        : null;
+
+    return <div className={`${classes.ragIcon} ${ragClassName}`} />;
   };
 
   const renderProject = (project) => {
-    const { title, finishDate, rag, id, topics } = project;
+    const { title, rag, id, topics, period } = project;
 
     return (
       <Accordion
@@ -221,20 +214,16 @@ function Projects() {
           id='panel1a-header'
         >
           <Typography component='div' className={classes.projectTitleWrapper}>
-            <div className={classes.dragHandle}>
-              <DragHandleIcon className={classes.svgIcon} />
-            </div>
+            <div className={classes.dragHandle}>{period}</div>
             <div className={classes.projectTitle}>{title}</div>
-            <div className={classes.finishDate}>
-              {getfinishDateToString(finishDate)}
-            </div>
             {renderRAG(rag)}
             {isOwner && (
-              <div className={classes.edit}>
-                <IconButton onClick={(e) => handleEditProject(e, project)}>
-                  <SettingsOutlinedIcon className={classes.svgIcon} />
-                </IconButton>
-              </div>
+              <IconButton
+                className={classes.editButton}
+                onClick={(e) => handleEditProject(e, project)}
+              >
+                <SettingsOutlinedIcon className={classes.svgIcon} />
+              </IconButton>
             )}
           </Typography>
         </AccordionSummary>
@@ -249,25 +238,20 @@ function Projects() {
     const length = data.length;
 
     if (length === 0) {
-      return <Typography variant='body2'>No projects found</Typography>;
-    }
-
-    return (
-      <React.Fragment>
+      return (
         <Typography
           variant='body2'
-          component={'div'}
-          className={classes.projectCaptionWrapper}
+          className={classes.noGoalFound}
+          component='em'
         >
-          <div className={classes.dragHandle}>&nbsp;</div>
-          <div className={classes.projectTitle}>priority</div>
-          <div className={classes.finishDate}>finish date</div>
-          <div className={classes.rag}>RAG</div>
-          {isOwner && <div className={classes.edit}>edit</div>}
+          No goals found
         </Typography>
-        {data.map((project) => renderProject(project))}
-      </React.Fragment>
-    );
+      );
+    }
+
+    return data.map((project) => (
+      <Draggable>{renderProject(project)}</Draggable>
+    ));
   };
 
   if (loading) return 'Loading...';
@@ -275,15 +259,16 @@ function Projects() {
 
   return (
     <>
-      <Grid container alignItems='center'>
+      <Grid container className={classes.projectHeadingWrap}>
         <Grid item className='page-title'>
-          <Typography variant='h5'>Projects</Typography>
+          <Typography className={classes.projectHeading} variant='h5'>
+            Goals
+          </Typography>
         </Grid>
         {isOwner && (
           <Grid item>
             <IconButton
               aria-label='add'
-              color='primary'
               onClick={handleAddProject}
               className={classes.addProject}
             >

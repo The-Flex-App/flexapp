@@ -7,7 +7,8 @@ const PROJECTS = gql`
       title
       description
       rag
-      finishDate
+      period
+      order
       topics {
         id
         title

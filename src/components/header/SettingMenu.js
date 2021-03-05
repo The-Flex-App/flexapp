@@ -15,7 +15,8 @@ import Menu from './Menu';
 
 const useStyles = makeStyles((theme) => ({
   buttonRoot: {
-    padding: 8,
+    padding: theme.spacing(1),
+    color: theme.palette.primary.main,
   },
   menuItemRoot: {
     display: 'flex',
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   circle: {
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.light,
-    marginRight: 10,
+    marginRight: theme.spacing(1),
   },
   link: {
     display: 'flex',
@@ -46,10 +47,10 @@ const useStyles = makeStyles((theme) => ({
   },
   removeButtonRoot: {
     padding: 5,
-    marginLeft: 10,
+    marginLeft: theme.spacing(1),
   },
   copylink: {
-    marginRight: 10,
+    marginRight: theme.spacing(1),
     width: 40,
   },
 }));
@@ -97,7 +98,7 @@ export default function SettingMenu(props) {
   const { id: userId, role, workspaceId, workspaceMembers } = useSelector(
     ({ users }) => {
       return users.loggedInUser || {};
-    },
+    }
   );
 
   const [addInvite] = useMutation(ADD_INVITE);
