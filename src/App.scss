@@ -1,4 +1,4 @@
-.project-list {
+.sidebar {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
   overflow: auto;
   min-height: calc(100vh - 135px);
@@ -8,6 +8,14 @@
   width: 260px;
   min-width: 260px;
   max-width: 260px !important;
+}
+
+.content-area {
+  flex: 1;
+}
+
+.app-wrapper {
+  display: flex;
 }
 
 [class*='render-actions__ActionsWrapper'] {
