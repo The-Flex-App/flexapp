@@ -17,6 +17,11 @@ let theme = createMuiTheme({
 });
 
 theme.overrides = {
+  MuiToolbar: {
+    root: {
+      minHeight: '38px !important',
+    },
+  },
   MuiPaper: {
     root: {
       color: 'inherit',

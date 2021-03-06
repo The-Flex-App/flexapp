@@ -16,11 +16,11 @@ const useStyles = makeStyles((theme) => ({
   flexTitle: {
     fontWeight: 'bold',
     display: 'inline-block',
-    fontSize: 24,
-    padding: '0 15px',
+    fontSize: 20,
+    padding: '0 12px',
     background: theme.palette.primary.main,
-    height: 40,
-    lineHeight: '40px',
+    height: '30px',
+    lineHeight: '30px',
     color: theme.palette.primary.contrastText,
     cursor: 'pointer',
     '&:hover': {
@@ -37,14 +37,10 @@ export default function ButtonAppBar() {
 
   return (
     <div className={classes.root}>
-      <AppBar
-        position='static'
-        color='transparent'
-        classes={{ root: classes.appBarRoot }}
-      >
+      <AppBar position="static" color="transparent" classes={{ root: classes.appBarRoot }}>
         <Toolbar>
-          <Typography variant='h5' className={classes.title}>
-            <Link component={Link} href='/' className={classes.flexTitle}>
+          <Typography variant="h5" className={classes.title}>
+            <Link component={Link} href="/" className={classes.flexTitle}>
               FLEX
             </Link>
           </Typography>
