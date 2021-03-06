@@ -15,10 +15,7 @@ import { useQuery } from '@apollo/client';
 import AddProject from './AddProject';
 
 import { PROJECTS } from '../../graphql/queries';
-import {
-  selectCurrentWorkspaceId,
-  selectIsOwner,
-} from '../../store/slices/user';
+import { selectCurrentWorkspaceId, selectIsOwner } from '../../store/slices/user';
 import { getProjects } from '../../store/slices/projects';
 import Topics from '../topics/Topics';
 import { setProjects } from '../../store/slices/projects';
@@ -35,29 +32,29 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing(0.5),
-    padding: theme.spacing(0, 0.5),
+    padding: 0,
   },
   projectHeading: {
-    fontSize: 18,
+    fontSize: 16,
     marginLeft: 25,
   },
   addProject: {
     color: theme.palette.common.white,
     padding: 0,
     '& svg': {
-      fontSize: 22,
+      fontSize: 18,
     },
   },
   projectCaptionWrapper: {
     display: 'flex',
-    padding: theme.spacing(1),
+    padding: 0,
   },
   projectTitleWrapper: {
     display: 'flex',
     width: '100%',
-    height: 35,
+    height: 28,
     alignItems: 'center',
-    padding: theme.spacing(0, 0.5),
+    padding: 0,
 
     '& $ragIcon': {
       fontSize: '80%',
@@ -84,13 +81,13 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: 'ellipsis',
   },
   ragIcon: {
-    width: 18,
-    height: 18,
-    display: 'inline-block',
-    boxSizing: 'border-box',
-    textAlign: 'center',
+    width: 15,
+    height: 15,
+    lineHeight: 28,
     borderRadius: 10,
-    marginLeft: theme.spacing(1),
+    '&+button': {
+      marginLeft: 6,
+    },
   },
   ragRIcon: {
     backgroundColor: 'red',
@@ -101,10 +98,6 @@ const useStyles = makeStyles((theme) => ({
   ragGIcon: {
     backgroundColor: '#0ca789',
     color: theme.palette.common.white,
-  },
-  editButton: {
-    padding: 4,
-    marginLeft: theme.spacing(1),
   },
   root: {
     padding: 0,
@@ -125,15 +118,8 @@ const useStyles = makeStyles((theme) => ({
       minHeight: 25,
     },
   },
-  content: {
-    margin: '0 auto',
-    width: '100%',
-    '&$expanded': {
-      margin: '0 auto',
-    },
-  },
-  expanded: {
-    margin: '0 auto',
+  settingsIcon: {
+    padding: 0,
   },
   accordionDetailsRoot: {
     display: 'block',
@@ -182,46 +168,27 @@ function Projects() {
 
   const renderRAG = (rag) => {
     const ragClassName =
-      rag === 'R'
-        ? classes.ragRIcon
-        : rag === 'A'
-        ? classes.ragAIcon
-        : rag === 'G'
-        ? classes.ragGIcon
-        : null;
+      rag === 'R' ? classes.ragRIcon : rag === 'A' ? classes.ragAIcon : rag === 'G' ? classes.ragGIcon : null;
 
-    return <div className={`${classes.ragIcon} ${ragClassName}`} />;
+    return <div className={`${classes.ragIcon} ${ragClassName} rag-icon`} />;
   };
 
   const renderProject = (project) => {
     const { title, rag, id, topics, period } = project;
 
     return (
-      <Accordion
-        key={id}
-        classes={{ root: classes.root, expanded: classes.expanded }}
-      >
+      <Accordion key={id}>
         <AccordionSummary
-          classes={{
-            root: classes.summaryRoot,
-            content: classes.content,
-            expanded: classes.expanded,
-          }}
-          className={
-            activeProjectId === parseInt(id, 10) ? classes.expanded : ''
-          }
-          aria-controls='panel1a-content'
-          id='panel1a-header'
+          className={activeProjectId === parseInt(id, 10) ? classes.expanded : ''}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
         >
-          <Typography component='div' className={classes.projectTitleWrapper}>
+          <Typography component="div" className={classes.projectTitleWrapper}>
             <div className={classes.dragHandle}>{period}</div>
             <div className={classes.projectTitle}>{title}</div>
             {renderRAG(rag)}
             {isOwner && (
-              <IconButton
-                className={classes.editButton}
-                onClick={(e) => handleEditProject(e, project)}
-              >
+              <IconButton className={classes.settingsIcon} onClick={(e) => handleEditProject(e, project)}>
                 <SettingsOutlinedIcon className={classes.svgIcon} />
               </IconButton>
             )}
@@ -239,19 +206,13 @@ function Projects() {
 
     if (length === 0) {
       return (
-        <Typography
-          variant='body2'
-          className={classes.noGoalFound}
-          component='em'
-        >
+        <Typography variant="body2" className={classes.noGoalFound} component="em">
           No goals found
         </Typography>
       );
     }
 
-    return data.map((project) => (
-      <Draggable>{renderProject(project)}</Draggable>
-    ));
+    return data.map((project) => <Draggable>{renderProject(project)}</Draggable>);
   };
 
   if (loading) return 'Loading...';
@@ -260,18 +221,14 @@ function Projects() {
   return (
     <>
       <Grid container className={classes.projectHeadingWrap}>
-        <Grid item className='page-title'>
-          <Typography className={classes.projectHeading} variant='h5'>
+        <Grid item className="page-title">
+          <Typography className={classes.projectHeading} variant="h5">
             Goals
           </Typography>
         </Grid>
         {isOwner && (
           <Grid item>
-            <IconButton
-              aria-label='add'
-              onClick={handleAddProject}
-              className={classes.addProject}
-            >
+            <IconButton aria-label="add" onClick={handleAddProject} className={classes.addProject}>
               <AddCircleIcon />
             </IconButton>
             <AddProject

@@ -3,14 +3,15 @@ import { createMuiTheme, fade } from '@material-ui/core/styles';
 let theme = createMuiTheme({
   typography: {
     fontFamily: '"Verdana", "Geneva", "Tahoma", sans-serif',
-    fontSize: 15,
+    fontSize: 14,
     body1: {
-      fontSize: 15,
+      fontSize: 14,
     },
   },
   palette: {
     primary: {
       main: '#0199ad',
+      light: '#6cc9d6',
     },
   },
 });
@@ -57,6 +58,37 @@ theme.overrides = {
           backgroundColor: fade(theme.palette.common.white, 0.25),
         },
       },
+    },
+  },
+  MuiAccordion: {
+    root: {
+      minHeight: 0,
+      maxHeight: 28,
+      padding: 0,
+      background: 'transparent',
+      boxShadow: 'none',
+      '&$expanded': {
+        margin: 0,
+      },
+    },
+    expanded: {
+      margin: 0,
+      minHeight: 0,
+    },
+  },
+  MuiAccordionSummary: {
+    root: {
+      minHeight: 0,
+      maxHeight: 28,
+      padding: '0 4px 0 0',
+      '&$expanded': { minHeight: 0, margin: 0 },
+      '&hover': {
+        backgroundColor: theme.palette.primary.light,
+      },
+    },
+    content: {
+      margin: 0,
+      '&$expanded': { minHeight: 0 },
     },
   },
 };

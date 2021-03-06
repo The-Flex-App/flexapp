@@ -9,10 +9,7 @@ import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import Typography from '@material-ui/core/Typography';
 
 import AddTopic from './AddTopic';
-import {
-  setSelectedTopic,
-  selectCurrentTopic,
-} from '../../store/slices/topics';
+import { setSelectedTopic, selectCurrentTopic } from '../../store/slices/topics';
 import { selectIsOwner } from '../../store/slices/user';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     marginLeft: 25,
-    padding: theme.spacing(0, 0.5),
-    height: 30,
+    padding: 0,
+    height: 28,
   },
   addTopicTypo: {
     flex: 1,
@@ -41,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     width: '100%',
     alignItems: 'center',
-    height: 30,
+    height: 28,
   },
   topicTitle: {
     flex: 1,
@@ -53,11 +50,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 15,
   },
   listItem: {
-    padding: '0 4px 0 29px',
+    padding: '0 4px 0 4px',
+    marginLeft: 21,
+    width: 'calc(100% - 21px)',
   },
   editButton: {
-    padding: 4,
-    marginLeft: theme.spacing(1),
+    padding: 0,
   },
 }));
 
@@ -91,9 +89,7 @@ function Topics(props) {
   };
 
   const handleTopicSelected = (topic) => {
-    dispatch(
-      setSelectedTopic({ ...topic, projectId: parseInt(projectId, 10) })
-    );
+    dispatch(setSelectedTopic({ ...topic, projectId: parseInt(projectId, 10) }));
   };
 
   const renderTopic = (topic) => {
@@ -107,13 +103,10 @@ function Topics(props) {
           selected={id === selectedTopic.id}
           className={classes.listItem}
         >
-          <Typography component='div' className={classes.topicTitleWrapper}>
+          <Typography component="div" className={classes.topicTitleWrapper}>
             <div className={classes.topicTitle}>{title}</div>
             {isOwner && (
-              <IconButton
-                className={classes.editButton}
-                onClick={(e) => handleEditTopic(e, topic)}
-              >
+              <IconButton className={classes.editButton} onClick={(e) => handleEditTopic(e, topic)}>
                 <SettingsOutlinedIcon className={classes.svgIcon} />
               </IconButton>
             )}
@@ -128,19 +121,13 @@ function Topics(props) {
 
     if (length === 0) {
       return (
-        <Typography
-          variant='body2'
-          component='em'
-          className={classes.noTopicsFound}
-        >
+        <Typography variant="body2" component="em" className={classes.noTopicsFound}>
           No activities found
         </Typography>
       );
     }
 
-    return (
-      <List disablePadding>{data.map((topic) => renderTopic(topic))}</List>
-    );
+    return <List disablePadding>{data.map((topic) => renderTopic(topic))}</List>;
   };
 
   return (
@@ -148,15 +135,11 @@ function Topics(props) {
       {renderTopics(topics || [])}
       {isOwner && (
         <React.Fragment>
-          <Typography component='div' className={classes.addTopicWrapper}>
-            <Typography component='span' className={classes.addTopicTypo}>
+          <Typography component="div" className={classes.addTopicWrapper}>
+            <Typography component="span" className={classes.addTopicTypo}>
               Add activity
             </Typography>
-            <IconButton
-              aria-label='add'
-              onClick={handleAddTopic}
-              className={classes.addTopicButton}
-            >
+            <IconButton aria-label="add" onClick={handleAddTopic} className={classes.addTopicButton}>
               <AddCircleIcon />
             </IconButton>
           </Typography>
