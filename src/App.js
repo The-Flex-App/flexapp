@@ -12,10 +12,10 @@ function App() {
       <Grid item xs={12}>
         <ButtonAppBar />
       </Grid>
-      <Grid item xs={2} className='project-list'>
+      <Grid item xs={2} className="project-list">
         <Projects />
       </Grid>
-      <Grid container xs={10} className='videos-list'>
+      <Grid item xs={10} className="videos-list">
         <Videos />
       </Grid>
       <Grid item xs={12}>

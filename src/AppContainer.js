@@ -25,9 +25,8 @@ export default function AppContainer() {
       <Provider store={store}>
         <MuiThemeProvider theme={muiTheme}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Container maxWidth={false}>
-              <Router />
-            </Container>
+            <Router />
+
             <OverlayLoader />
           </MuiPickersUtilsProvider>
         </MuiThemeProvider>

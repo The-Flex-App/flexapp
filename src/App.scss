@@ -5,7 +5,9 @@
   padding: 24px 8px 24px 16px;
   background: #0199ad;
   color: #fff;
+  width: 260px;
   min-width: 260px;
+  max-width: 260px !important;
 }
 
 [class*='render-actions__ActionsWrapper'] {
@@ -17,4 +19,9 @@
 .video-playback-container {
   width: 180px;
   height: 180px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
