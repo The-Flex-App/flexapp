@@ -50,9 +50,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 15,
   },
   listItem: {
-    padding: '0 4px 0 4px',
-    marginLeft: 21,
-    width: 'calc(100% - 21px)',
+    padding: '0 4px 0 25px',
   },
   editButton: {
     padding: 0,
