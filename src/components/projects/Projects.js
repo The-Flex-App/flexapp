@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   projectHeading: {
-    fontSize: 16,
     marginLeft: 25,
   },
   addProject: {
@@ -222,7 +221,7 @@ function Projects() {
     <>
       <Grid container className={classes.projectHeadingWrap}>
         <Grid item className="page-title">
-          <Typography className={classes.projectHeading} variant="h5">
+          <Typography className={classes.projectHeading} variant="subtitle1">
             Goals
           </Typography>
         </Grid>

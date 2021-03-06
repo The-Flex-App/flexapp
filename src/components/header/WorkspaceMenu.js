@@ -79,7 +79,9 @@ const WorkspacerMenuItem = forwardRef((props, ref) => {
         >
           {getAvatarChars(firstName, lastName) || <DehazeIcon />}
         </Avatar>
-        <div className={classes.menuText}>{getFullName(firstName, lastName, email)}</div>
+        <Typography variant="subtitle1" className={classes.menuText}>
+          {getFullName(firstName, lastName, email)}
+        </Typography>
       </ItemComponent>
       {isRemovable && (
         <IconButton
@@ -138,6 +140,7 @@ export default function WorkspaceMenu(props) {
       id="menu-appbar"
       trigger={
         <Typography
+          variant="subtitle1"
           aria-label="account of current user"
           aria-controls="menu-appbar"
           aria-haspopup="true"

@@ -5,7 +5,7 @@ import WorkspaceMenu from './WorkspaceMenu';
 import AccountMenu from './AccountMenu';
 
 const useStyles = makeStyles((theme) => ({
-  menusWapper: {
+  root: {
     display: 'flex',
     alignItems: 'center',
   },
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UserInfo() {
   const classes = useStyles();
   return (
-    <div className={classes.menusWapper}>
+    <div className={classes.root}>
       <SettingMenu />
       <WorkspaceMenu />
       <AccountMenu />

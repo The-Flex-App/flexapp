@@ -17,6 +17,12 @@ let theme = createMuiTheme({
 });
 
 theme.overrides = {
+  MuiTypography: {
+    subtitle1: {
+      fontWeight: 'bold',
+      fontSize: '1rem',
+    },
+  },
   MuiToolbar: {
     root: {
       minHeight: '38px !important',

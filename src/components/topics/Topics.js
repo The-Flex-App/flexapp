@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
   addTopicTypo: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 11,
   },
   topicTitleWrapper: {
     display: 'flex',
