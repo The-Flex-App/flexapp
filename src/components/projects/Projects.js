@@ -15,10 +15,7 @@ import { useQuery } from '@apollo/client';
 import AddProject from './AddProject';
 
 import { PROJECTS } from '../../graphql/queries';
-import {
-  selectCurrentWorkspaceId,
-  selectIsOwner,
-} from '../../store/slices/user';
+import { selectCurrentWorkspaceId, selectIsOwner } from '../../store/slices/user';
 import { getProjects } from '../../store/slices/projects';
 import Topics from '../topics/Topics';
 import { setProjects } from '../../store/slices/projects';
@@ -51,10 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
   addProject: {
     color: theme.palette.common.white,
-    padding: 0,
-    '& svg': {
-      fontSize: 18,
-    },
+    padding: theme.spacing(0.25),
   },
   projectCaptionWrapper: {
     display: 'flex',
@@ -123,7 +117,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   summaryRoot: {
-    padding: 0,
     minHeight: 25,
     '&$expanded': {
       margin: '0 auto',
@@ -198,13 +191,7 @@ function Projects() {
 
   const renderRAG = (rag) => {
     const ragClassName =
-      rag === 'R'
-        ? classes.ragRIcon
-        : rag === 'A'
-        ? classes.ragAIcon
-        : rag === 'G'
-        ? classes.ragGIcon
-        : null;
+      rag === 'R' ? classes.ragRIcon : rag === 'A' ? classes.ragAIcon : rag === 'G' ? classes.ragGIcon : null;
 
     return <div className={`${classes.ragIcon} ${ragClassName} rag-icon`} />;
   };
@@ -245,25 +232,17 @@ function Projects() {
                 content: classes.content,
                 expanded: classes.expanded,
               }}
-              className={
-                activeProjectId === parseInt(id, 10) ? classes.expanded : ''
-              }
-              aria-controls='panel1a-content'
-              id='panel1a-header'
+              className={activeProjectId === parseInt(id, 10) ? classes.expanded : ''}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
               {...provided.dragHandleProps}
             >
-              <Typography
-                component='div'
-                className={classes.projectTitleWrapper}
-              >
+              <Typography component="div" className={classes.projectTitleWrapper}>
                 <div className={classes.dragHandle}>{period}</div>
                 <div className={classes.projectTitle}>{title}</div>
                 {renderRAG(rag)}
                 {isOwner && (
-                  <IconButton
-                    className={classes.settingsIcon}
-                    onClick={(e) => handleEditProject(e, project)}
-                  >
+                  <IconButton className={classes.settingsIcon} onClick={(e) => handleEditProject(e, project)}>
                     <SettingsOutlinedIcon className={classes.svgIcon} />
                   </IconButton>
                 )}
@@ -283,11 +262,7 @@ function Projects() {
 
     if (length === 0) {
       return (
-        <Typography
-          variant='body2'
-          className={classes.noGoalFound}
-          component='em'
-        >
+        <Typography variant="body2" className={classes.noGoalFound} component="em">
           No goals found
         </Typography>
       );
@@ -295,7 +270,7 @@ function Projects() {
 
     return (
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId='list'>
+        <Droppable droppableId="list">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               {data.map((project, index) => renderProject(project, index))}
@@ -313,18 +288,14 @@ function Projects() {
   return (
     <>
       <Grid container className={classes.projectHeadingWrap}>
-        <Grid item className='page-title'>
-          <Typography className={classes.projectHeading} variant='subtitle1'>
+        <Grid item className="page-title">
+          <Typography className={classes.projectHeading} variant="subtitle1">
             Goals
           </Typography>
         </Grid>
         {isOwner && (
           <Grid item>
-            <IconButton
-              aria-label='add'
-              onClick={handleAddProject}
-              className={classes.addProject}
-            >
+            <IconButton aria-label="add" onClick={handleAddProject} className={classes.addProject}>
               <AddCircleIcon />
             </IconButton>
             <AddProject
