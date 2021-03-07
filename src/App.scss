@@ -1,11 +1,22 @@
-.project-list {
+.sidebar {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
   overflow: auto;
-  height: 40rem;
+  min-height: calc(100vh - 140px);
+  padding: 24px 8px 24px 16px;
+  background: #0199ad;
+  color: #fff;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px !important;
+  box-shadow: inset -1px 0 10px -5px #000;
 }
 
-.videos-list {
-  padding-left: 24px;
+.content-area {
+  flex: 1;
+}
+
+.app-wrapper {
+  display: flex;
 }
 
 [class*='render-actions__ActionsWrapper'] {
@@ -17,4 +28,9 @@
 .video-playback-container {
   width: 180px;
   height: 180px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }

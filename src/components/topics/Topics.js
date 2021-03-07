@@ -3,9 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import AddCircleIcon from '@material-ui/icons/AddCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import Typography from '@material-ui/core/Typography';
 
@@ -18,23 +17,31 @@ import { selectIsOwner } from '../../store/slices/user';
 
 const useStyles = makeStyles((theme) => ({
   noTopicsFound: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+    padding: theme.spacing(0, 0.5),
+    marginLeft: 25,
+    height: 30,
+    display: 'flex',
+    alignItems: 'center',
   },
   addTopicButton: {
-    width: 50,
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
+    padding: theme.spacing(0.25),
+  },
+  addTopicWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: 25,
+    padding: 0,
+    height: 28,
   },
   addTopicTypo: {
-    color: theme.palette.common.black,
-    marginRight: theme.spacing(1),
+    flex: 1,
+    fontSize: 11,
   },
   topicTitleWrapper: {
     display: 'flex',
     width: '100%',
     alignItems: 'center',
-    color: theme.palette.common.black,
+    height: 28,
   },
   topicTitle: {
     flex: 1,
@@ -43,20 +50,13 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: 'ellipsis',
   },
   svgIcon: {
-    verticalAlign: 'middle',
-    fontSize: 18,
-  },
-  dragHandle: {
-    width: 40,
-    textAlign: 'center',
+    fontSize: 15,
   },
   listItem: {
-    height: 50,
-    padding: theme.spacing(0, 1),
+    padding: '0 4px 0 25px',
   },
-  editTopic: {
-    width: 50,
-    textAlign: 'center',
+  editButton: {
+    padding: 0,
   },
 }));
 
@@ -107,16 +107,14 @@ function Topics(props) {
           className={classes.listItem}
         >
           <Typography component='div' className={classes.topicTitleWrapper}>
-            <div className={classes.dragHandle}>
-              <DragHandleIcon className={classes.svgIcon} />
-            </div>
             <div className={classes.topicTitle}>{title}</div>
             {isOwner && (
-              <div className={classes.editTopic}>
-                <IconButton onClick={(e) => handleEditTopic(e, topic)}>
-                  <SettingsOutlinedIcon className={classes.svgIcon} />
-                </IconButton>
-              </div>
+              <IconButton
+                className={classes.editButton}
+                onClick={(e) => handleEditTopic(e, topic)}
+              >
+                <SettingsOutlinedIcon className={classes.svgIcon} />
+              </IconButton>
             )}
           </Typography>
         </ListItem>
@@ -129,8 +127,12 @@ function Topics(props) {
 
     if (length === 0) {
       return (
-        <Typography variant='body2' className={classes.noTopicsFound}>
-          No topics found
+        <Typography
+          variant='body2'
+          component='em'
+          className={classes.noTopicsFound}
+        >
+          No activities found
         </Typography>
       );
     }
@@ -145,13 +147,12 @@ function Topics(props) {
       {renderTopics(topics || [])}
       {isOwner && (
         <React.Fragment>
-          <Typography component='div' align={'right'}>
+          <Typography component='div' className={classes.addTopicWrapper}>
             <Typography component='span' className={classes.addTopicTypo}>
-              Add topic
+              Add activity
             </Typography>
             <IconButton
               aria-label='add'
-              color='primary'
               onClick={handleAddTopic}
               className={classes.addTopicButton}
             >

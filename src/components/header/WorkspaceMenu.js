@@ -13,12 +13,14 @@ import { setWorkspaceMemberList } from '../../store/slices/user';
 import { useHistory, useParams } from 'react-router-dom';
 import { getAvatarChars, getFullName } from '../../utils/misc';
 import Menu from './Menu';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   buttonRoot: {
     padding: 0,
-    marginLeft: 10,
-    marginRight: 10,
+    margin: theme.spacing(0, 1),
+    color: theme.palette.primary.main,
+    cursor: 'pointer',
   },
   menuItemRoot: {
     display: 'flex',
@@ -27,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   square: {
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.light,
-    marginRight: 10,
+    marginRight: theme.spacing(1),
     boxShadow: '0 5px 5px -2px rgba(0, 0, 0, 0.4)',
   },
   accountAvatar: {
@@ -93,9 +95,9 @@ const WorkspacerMenuItem = forwardRef((props, ref) => {
         >
           {getAvatarChars(firstName, lastName) || <DehazeIcon />}
         </Avatar>
-        <div className={classes.menuText}>
+        <Typography variant='subtitle1' className={classes.menuText}>
           {getFullName(firstName, lastName, email)}
-        </div>
+        </Typography>
       </ItemComponent>
       {isRemovable && (
         <IconButton
@@ -163,22 +165,15 @@ export default function WorkspaceMenu(props) {
     <Menu
       id='menu-appbar'
       trigger={
-        <IconButton
+        <Typography
+          variant='subtitle1'
           aria-label='account of current user'
           aria-controls='menu-appbar'
           aria-haspopup='true'
-          color='inherit'
           classes={{ root: classes.buttonRoot }}
         >
-          <Avatar
-            variant='square'
-            alt={getFullName(firstName, lastName, email)}
-            src={getAvatarChars(firstName, lastName) ? '/' : ''}
-            className={classes.accountAvatar}
-          >
-            {getAvatarChars(firstName, lastName) || <DehazeIcon />}
-          </Avatar>
-        </IconButton>
+          {getFullName(firstName, lastName, email)}'s board
+        </Typography>
       }
       menuItemsTitle={'Boards shared with me'}
       menuItems={workspaceList.map((workspace, index) => (

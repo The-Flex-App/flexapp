@@ -9,7 +9,6 @@ import UserInfo from './UserInfo';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    marginBottom: theme.spacing(4),
   },
   title: {
     flexGrow: 1,
@@ -17,14 +16,13 @@ const useStyles = makeStyles((theme) => ({
   flexTitle: {
     fontWeight: 'bold',
     display: 'inline-block',
-    fontSize: '19pt',
-    padding: '0 15px',
+    fontSize: 20,
+    padding: '0 12px',
     background: theme.palette.primary.main,
-    height: 40,
-    lineHeight: '40px',
+    height: '30px',
+    lineHeight: '30px',
     color: theme.palette.primary.contrastText,
     cursor: 'pointer',
-
     '&:hover': {
       textDecoration: 'none',
     },

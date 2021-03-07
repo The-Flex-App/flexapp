@@ -6,7 +6,8 @@ const ADD_PROJECT = gql`
       id
       title
       rag
-      finishDate
+      period
+      order
     }
   }
 `;
@@ -17,7 +18,8 @@ const EDIT_PROJECT = gql`
       id
       title
       rag
-      finishDate
+      period
+      order
     }
   }
 `;
@@ -28,7 +30,8 @@ const DELETE_PROJECT = gql`
       id
       title
       rag
-      finishDate
+      period
+      order
     }
   }
 `;
@@ -137,6 +140,14 @@ const REMOVE_USER_WORKSPACE = gql`
   }
 `;
 
+const REARRANGE_PROJECT = gql`
+  mutation RearrangeProject($input: ProjectListInput) {
+    reArrangeProjects(input: $input) {
+      success
+    }
+  }
+`;
+
 export {
   ADD_PROJECT,
   EDIT_PROJECT,
@@ -150,4 +161,5 @@ export {
   ADD_USER,
   ADD_INVITE,
   REMOVE_USER_WORKSPACE,
+  REARRANGE_PROJECT,
 };

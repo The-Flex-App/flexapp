@@ -15,15 +15,13 @@ const useStyles = makeStyles((theme) => ({
   paperScrollPaper: {
     width: '100%',
     margin: 0,
+    maxWidth: 450,
   },
   dialogTitleRoot: {
-    padding: theme.spacing(0, 0, 1),
+    marginBottom: theme.spacing(1),
   },
   dialogActionsRoot: {
-    padding: theme.spacing(1, 0, 0),
-  },
-  dialogContentRoot: {
-    padding: theme.spacing(1, 0),
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -58,7 +56,7 @@ const ConfirmationDialog = (props) => {
       >
         {title}
       </DialogTitle>
-      <DialogContent classes={{ root: classes.dialogContentRoot }}>
+      <DialogContent>
         <Typography>{description}</Typography>
       </DialogContent>
       <DialogActions classes={{ root: classes.dialogActionsRoot }}>

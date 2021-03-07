@@ -6,6 +6,9 @@ import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -17,10 +20,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import { DatePicker } from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles';
 import { useMutation } from '@apollo/client';
-import { format } from 'date-fns';
 import {
   ADD_PROJECT,
   EDIT_PROJECT,
@@ -40,9 +41,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  actionsRoot: {
-    padding: theme.spacing(1, 3),
-  },
   checked: {
     '&$redRadioButton': {
       color: '#ff0000',
@@ -57,19 +55,20 @@ const useStyles = makeStyles((theme) => ({
   redRadioButton: {
     color: '#ff0000',
     '& svg': {
-      fontSize: 30,
+      fontSize: 25,
     },
   },
+  formControl: {},
   yellowRadioButton: {
     color: '#fac710',
     '& svg': {
-      fontSize: 30,
+      fontSize: 25,
     },
   },
   greenRadioButton: {
     color: '#0ca789',
     '& svg': {
-      fontSize: 30,
+      fontSize: 25,
     },
   },
 }));
@@ -85,13 +84,13 @@ export default function AddProject(props) {
   const [isDirty, setDirty] = React.useState(false);
   const [openConfirmation, setOpenConfirmation] = React.useState(false);
   const [projectTitle, setProjectTitle] = React.useState(
-    selectedProject && selectedProject.title,
+    selectedProject && selectedProject.title
   );
-  const [projectFinishDate, setProjectFinishDate] = React.useState(
-    format(new Date(selectedProject && selectedProject.finishDate), 'y-MM'),
+  const [projectPeriod, setProjectPeriod] = React.useState(
+    selectedProject && selectedProject.period
   );
   const [projectRag, setProjectRAG] = React.useState(
-    selectedProject && selectedProject.rag,
+    selectedProject && selectedProject.rag
   );
 
   useEffect(() => {
@@ -99,14 +98,12 @@ export default function AddProject(props) {
       if (selectedProject) {
         setEditMode(true);
         setProjectTitle(selectedProject.title);
-        setProjectFinishDate(
-          format(new Date(selectedProject.finishDate), 'y-MM'),
-        );
+        setProjectPeriod(selectedProject.period);
         setProjectRAG(selectedProject.rag);
       } else {
         setEditMode(false);
         setProjectTitle(undefined);
-        setProjectFinishDate(format(new Date(), 'y-MM'));
+        setProjectPeriod(undefined);
         setProjectRAG(undefined);
       }
       setDirty(false);
@@ -120,7 +117,7 @@ export default function AddProject(props) {
 
   const isSaveDisabled = () => {
     if (isEditMode) return !isDirty;
-    return !(projectTitle && projectFinishDate && projectRag);
+    return !(projectTitle && projectPeriod && projectRag);
   };
 
   const handleNameChange = (e) => {
@@ -128,8 +125,8 @@ export default function AddProject(props) {
     setDirty(true);
   };
 
-  const handleFinishDateChange = (x) => {
-    setProjectFinishDate(x);
+  const handlePeriodChange = (e) => {
+    setProjectPeriod(e.target.value);
     setDirty(true);
   };
 
@@ -172,8 +169,9 @@ export default function AddProject(props) {
             id: selectedProject.id,
             input: {
               rag: projectRag,
-              finishDate: projectFinishDate,
+              period: projectPeriod,
               title: projectTitle,
+              order: 2,
             },
           },
           refetchQueries: ['GetProjects'],
@@ -184,8 +182,9 @@ export default function AddProject(props) {
             input: {
               title: projectTitle,
               rag: projectRag,
-              finishDate: projectFinishDate,
+              period: projectPeriod,
               workspaceId: activeWorkspaceId || workspaceId,
+              order: 1,
             },
           },
           refetchQueries: ['GetProjects'],
@@ -218,6 +217,7 @@ export default function AddProject(props) {
         aria-labelledby='form-dialog-title'
         fullWidth
         style={{ zIndex: 2 }}
+        maxWidth='xs'
       >
         <DialogTitle
           id='form-dialog-title'
@@ -225,7 +225,7 @@ export default function AddProject(props) {
           classes={{ root: classes.dialogTitle }}
         >
           <Typography variant='h6' component='h2'>
-            {isEditMode ? 'Edit project' : 'Add new project'}
+            {isEditMode ? 'Edit goal' : 'Add new goal'}
           </Typography>
           <IconButton onClick={onClose}>
             <CloseIcon />
@@ -236,23 +236,31 @@ export default function AddProject(props) {
             autoFocus
             margin='dense'
             id='name'
-            label='Project name'
+            label='Goal name'
             fullWidth
             value={projectTitle || ''}
             onChange={handleNameChange}
             variant='outlined'
           />
-          <DatePicker
-            fullWidth
-            variant='inline'
-            openTo='year'
-            views={['year', 'month']}
-            label='Finish date'
-            inputVariant='outlined'
-            value={projectFinishDate}
-            onChange={handleFinishDateChange}
-            margin='dense'
-          />
+          <FormControl fullWidth margin='dense' className={classes.formControl}>
+            <InputLabel htmlFor='period' variant='outlined'>
+              Period
+            </InputLabel>
+            <Select
+              id='period'
+              value={projectPeriod}
+              onChange={handlePeriodChange}
+              label='Period'
+              fullWidth
+              variant='outlined'
+              margin='dense'
+            >
+              <MenuItem value={'Q1'}>Q1</MenuItem>
+              <MenuItem value={'Q2'}>Q2</MenuItem>
+              <MenuItem value={'Q3'}>Q3</MenuItem>
+              <MenuItem value={'Q4'}>Q4</MenuItem>
+            </Select>
+          </FormControl>
           <RadioGroup
             row
             aria-label='rag'
@@ -297,11 +305,13 @@ export default function AddProject(props) {
               label='G'
             />
           </RadioGroup>
-          <FormControl error={!!error}>
-            <FormHelperText>{error && error.message}</FormHelperText>
-          </FormControl>
+          {error && (
+            <FormControl error={!!error}>
+              <FormHelperText>{error && error.message}</FormHelperText>
+            </FormControl>
+          )}
         </DialogContent>
-        <DialogActions classes={{ root: classes.actionsRoot }}>
+        <DialogActions>
           {isEditMode && (
             <Button
               variant='contained'
@@ -328,7 +338,7 @@ export default function AddProject(props) {
         onClose={onConfirmationClose}
         open={openConfirmation}
         description={
-          'Press "OK" to delete selected project or press "CANCEL" to discard delete operation.'
+          'Press "OK" to delete selected goal or press "CANCEL" to discard delete operation.'
         }
       />
     </div>

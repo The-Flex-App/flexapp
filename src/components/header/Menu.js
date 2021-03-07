@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
       position: 'absolute',
       background: 'white',
       top: -7,
-      right: 12,
+      right: 8,
       zIndex: -1,
       transform: 'rotate(45deg)',
       boxShadow: '-2px -2px 4px rgba(0,0,0,.2)',
