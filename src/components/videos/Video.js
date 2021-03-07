@@ -13,6 +13,7 @@ import { selectCurrentUserId } from '../../store/slices/user';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { setAppLoading } from '../../store/slices/app';
 import { VIDEOS_TOPIC } from '../../graphql/queries';
+import { Fragment } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   addVideobutton: {
@@ -20,6 +21,11 @@ const useStyles = makeStyles((theme) => ({
   },
   quickSummaryTextarea: {
     margin: theme.spacing(2, 0),
+  },
+  quickSummaryTitle: {
+    margin: theme.spacing(2, 0, 0.5),
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 }));
 
@@ -133,20 +139,28 @@ export default function Video(props) {
             },
           }}
         />
-        <TextField
-          autoFocus
-          margin='dense'
-          multiline
-          disabled={!isEdit}
-          rows={5}
-          id='quick-summary'
-          label='Quick summary'
-          onChange={handleInputChange}
-          variant='outlined'
-          fullWidth
-          value={videoTitle}
-          classes={{ root: classes.quickSummaryTextarea }}
-        />
+        {isEdit ? (
+          <TextField
+            autoFocus
+            margin='dense'
+            multiline
+            rows={5}
+            id='quick-summary'
+            label='Quick summary'
+            onChange={handleInputChange}
+            variant='outlined'
+            fullWidth
+            value={videoTitle}
+            classes={{ root: classes.quickSummaryTextarea }}
+          />
+        ) : (
+          <Fragment>
+            <Typography variant='h5' className={classes.quickSummaryTitle}>
+              Quick summary
+            </Typography>
+            <Typography>{videoTitle}</Typography>
+          </Fragment>
+        )}
       </Typography>
       {isEdit && (
         <Typography component='div' align={'right'}>

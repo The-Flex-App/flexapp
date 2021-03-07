@@ -37,10 +37,14 @@ export default function ButtonAppBar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="transparent" classes={{ root: classes.appBarRoot }}>
+      <AppBar
+        position='static'
+        color='transparent'
+        classes={{ root: classes.appBarRoot }}
+      >
         <Toolbar>
-          <Typography variant="h5" className={classes.title}>
-            <Link component={Link} href="/" className={classes.flexTitle}>
+          <Typography variant='h5' className={classes.title}>
+            <Link component={Link} href='/' className={classes.flexTitle}>
               FLEX
             </Link>
           </Typography>

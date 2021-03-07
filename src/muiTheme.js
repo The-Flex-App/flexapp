@@ -74,7 +74,6 @@ theme.overrides = {
   MuiAccordion: {
     root: {
       minHeight: 0,
-      maxHeight: 28,
       padding: 0,
       background: 'transparent',
       boxShadow: 'none',

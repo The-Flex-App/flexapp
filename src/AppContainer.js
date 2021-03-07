@@ -1,5 +1,4 @@
 import React from 'react';
-import Container from '@material-ui/core/Container';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import OverlayLoader from './components/OverlayLoader';

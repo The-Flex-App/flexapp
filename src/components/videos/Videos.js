@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
   videoList: {
     overflowY: 'auto',
-    maxHeight: `calc(100vh - 200px)`,
+    maxHeight: `calc(100vh - 150px)`,
     paddingRight: theme.spacing(1),
   },
   addVideo: {},

@@ -12,11 +12,11 @@ function App() {
       <Grid item xs={12}>
         <ButtonAppBar />
       </Grid>
-      <Grid item xs={12} className="app-wrapper">
-        <div className="sidebar">
+      <Grid item xs={12} className='app-wrapper'>
+        <div className='sidebar'>
           <Projects />
         </div>
-        <div className="content-area">
+        <div className='content-area'>
           <Videos />
         </div>
       </Grid>

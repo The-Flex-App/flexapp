@@ -10,18 +10,30 @@ import { makeStyles } from '@material-ui/core/styles';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Draggable from 'react-draggable';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useQuery } from '@apollo/client';
 import AddProject from './AddProject';
 
 import { PROJECTS } from '../../graphql/queries';
-import { selectCurrentWorkspaceId, selectIsOwner } from '../../store/slices/user';
+import {
+  selectCurrentWorkspaceId,
+  selectIsOwner,
+} from '../../store/slices/user';
 import { getProjects } from '../../store/slices/projects';
 import Topics from '../topics/Topics';
 import { setProjects } from '../../store/slices/projects';
 import { selectCurrentTopic } from '../../store/slices/topics';
 
 const useStyles = makeStyles((theme) => ({
+  projectsWrapper: {
+    borderRight: `1px solid rgba(0, 0, 0, 0.12)`,
+    overflow: 'auto',
+    minHeight: `calc(100vh - 135px)`,
+    padding: theme.spacing(3, 1, 3, 2),
+    background: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    minWidth: 300,
+  },
   noGoalFound: {
     padding: theme.spacing(0, 0.5),
     height: 25,
@@ -98,6 +110,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#0ca789',
     color: theme.palette.common.white,
   },
+
   root: {
     padding: 0,
     boxShadow: 'none',
@@ -117,6 +130,16 @@ const useStyles = makeStyles((theme) => ({
       minHeight: 25,
     },
   },
+  content: {
+    margin: '0 auto',
+    width: '100%',
+    '&$expanded': {
+      margin: '0 auto',
+    },
+  },
+  expanded: {
+    margin: '0 auto',
+  },
   settingsIcon: {
     padding: 0,
   },
@@ -125,6 +148,14 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
 }));
+
+// const reorder = (list, startIndex, endIndex) => {
+//   const result = Array.from(list);
+//   const [removed] = result.splice(startIndex, 1);
+//   result.splice(endIndex, 0, removed);
+
+//   return result;
+// };
 
 function Projects() {
   const classes = useStyles();
@@ -167,36 +198,83 @@ function Projects() {
 
   const renderRAG = (rag) => {
     const ragClassName =
-      rag === 'R' ? classes.ragRIcon : rag === 'A' ? classes.ragAIcon : rag === 'G' ? classes.ragGIcon : null;
+      rag === 'R'
+        ? classes.ragRIcon
+        : rag === 'A'
+        ? classes.ragAIcon
+        : rag === 'G'
+        ? classes.ragGIcon
+        : null;
 
     return <div className={`${classes.ragIcon} ${ragClassName} rag-icon`} />;
   };
 
-  const renderProject = (project) => {
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    if (result.destination.index === result.source.index) {
+      return;
+    }
+    // will update later
+    // const orderedProjects = reorder(
+    //   projectsData,
+    //   result.source.index,
+    //   result.destination.index
+    // );
+
+    // setState({ quotes });
+  };
+
+  const renderProject = (project, index) => {
     const { title, rag, id, topics, period } = project;
 
     return (
-      <Accordion key={id}>
-        <AccordionSummary
-          className={activeProjectId === parseInt(id, 10) ? classes.expanded : ''}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography component="div" className={classes.projectTitleWrapper}>
-            <div className={classes.dragHandle}>{period}</div>
-            <div className={classes.projectTitle}>{title}</div>
-            {renderRAG(rag)}
-            {isOwner && (
-              <IconButton className={classes.settingsIcon} onClick={(e) => handleEditProject(e, project)}>
-                <SettingsOutlinedIcon className={classes.svgIcon} />
-              </IconButton>
-            )}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails classes={{ root: classes.accordionDetailsRoot }}>
-          <Topics projectId={id} topics={topics} />
-        </AccordionDetails>
-      </Accordion>
+      <Draggable draggableId={id} index={index}>
+        {(provided) => (
+          <Accordion
+            key={id}
+            classes={{ root: classes.root, expanded: classes.expanded }}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+          >
+            <AccordionSummary
+              classes={{
+                root: classes.summaryRoot,
+                content: classes.content,
+                expanded: classes.expanded,
+              }}
+              className={
+                activeProjectId === parseInt(id, 10) ? classes.expanded : ''
+              }
+              aria-controls='panel1a-content'
+              id='panel1a-header'
+              {...provided.dragHandleProps}
+            >
+              <Typography
+                component='div'
+                className={classes.projectTitleWrapper}
+              >
+                <div className={classes.dragHandle}>{period}</div>
+                <div className={classes.projectTitle}>{title}</div>
+                {renderRAG(rag)}
+                {isOwner && (
+                  <IconButton
+                    className={classes.settingsIcon}
+                    onClick={(e) => handleEditProject(e, project)}
+                  >
+                    <SettingsOutlinedIcon className={classes.svgIcon} />
+                  </IconButton>
+                )}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails classes={{ root: classes.accordionDetailsRoot }}>
+              <Topics projectId={id} topics={topics} />
+            </AccordionDetails>
+          </Accordion>
+        )}
+      </Draggable>
     );
   };
 
@@ -205,13 +283,28 @@ function Projects() {
 
     if (length === 0) {
       return (
-        <Typography variant="body2" className={classes.noGoalFound} component="em">
+        <Typography
+          variant='body2'
+          className={classes.noGoalFound}
+          component='em'
+        >
           No goals found
         </Typography>
       );
     }
 
-    return data.map((project) => <Draggable>{renderProject(project)}</Draggable>);
+    return (
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId='list'>
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {data.map((project, index) => renderProject(project, index))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    );
   };
 
   if (loading) return 'Loading...';
@@ -220,14 +313,18 @@ function Projects() {
   return (
     <>
       <Grid container className={classes.projectHeadingWrap}>
-        <Grid item className="page-title">
-          <Typography className={classes.projectHeading} variant="subtitle1">
+        <Grid item className='page-title'>
+          <Typography className={classes.projectHeading} variant='subtitle1'>
             Goals
           </Typography>
         </Grid>
         {isOwner && (
           <Grid item>
-            <IconButton aria-label="add" onClick={handleAddProject} className={classes.addProject}>
+            <IconButton
+              aria-label='add'
+              onClick={handleAddProject}
+              className={classes.addProject}
+            >
               <AddCircleIcon />
             </IconButton>
             <AddProject
