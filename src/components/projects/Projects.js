@@ -11,15 +11,22 @@ import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import AddProject from './AddProject';
-
+import { REARRANGE_PROJECT } from '../../graphql/mutations';
 import { PROJECTS } from '../../graphql/queries';
-import { selectCurrentWorkspaceId, selectIsOwner } from '../../store/slices/user';
+import {
+  selectCurrentWorkspaceId,
+  selectIsOwner,
+} from '../../store/slices/user';
 import { getProjects } from '../../store/slices/projects';
 import Topics from '../topics/Topics';
 import { setProjects } from '../../store/slices/projects';
-import { selectCurrentTopic } from '../../store/slices/topics';
+import {
+  selectCurrentTopic,
+  setSelectedTopic,
+} from '../../store/slices/topics';
+import { setAppLoading } from '../../store/slices/app';
 
 const useStyles = makeStyles((theme) => ({
   projectsWrapper: {
@@ -140,15 +147,18 @@ const useStyles = makeStyles((theme) => ({
     display: 'block',
     padding: 0,
   },
+  droppableArea: {
+    minHeight: `calc(100% - 40px)`,
+  },
 }));
 
-// const reorder = (list, startIndex, endIndex) => {
-//   const result = Array.from(list);
-//   const [removed] = result.splice(startIndex, 1);
-//   result.splice(endIndex, 0, removed);
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
 
-//   return result;
-// };
+  return result;
+};
 
 function Projects() {
   const classes = useStyles();
@@ -158,7 +168,7 @@ function Projects() {
   const { projectId: activeProjectId } = useSelector(selectCurrentTopic);
   const projectsData = useSelector(getProjects);
   const { workspaceId: activeWorkspaceId } = useParams();
-
+  const [reArrangeProjects] = useMutation(REARRANGE_PROJECT);
   const { loading, error, data } = useQuery(PROJECTS, {
     variables: { workspaceId: activeWorkspaceId || workspaceId },
   });
@@ -191,12 +201,18 @@ function Projects() {
 
   const renderRAG = (rag) => {
     const ragClassName =
-      rag === 'R' ? classes.ragRIcon : rag === 'A' ? classes.ragAIcon : rag === 'G' ? classes.ragGIcon : null;
+      rag === 'R'
+        ? classes.ragRIcon
+        : rag === 'A'
+        ? classes.ragAIcon
+        : rag === 'G'
+        ? classes.ragGIcon
+        : null;
 
     return <div className={`${classes.ragIcon} ${ragClassName} rag-icon`} />;
   };
 
-  const onDragEnd = (result) => {
+  const onDragEnd = async (result) => {
     if (!result.destination) {
       return;
     }
@@ -204,27 +220,55 @@ function Projects() {
     if (result.destination.index === result.source.index) {
       return;
     }
-    // will update later
-    // const orderedProjects = reorder(
-    //   projectsData,
-    //   result.source.index,
-    //   result.destination.index
-    // );
 
-    // setState({ quotes });
+    dispatch(setAppLoading(true));
+
+    const orderedProjects = reorder(
+      projectsData,
+      result.source.index,
+      result.destination.index
+    );
+
+    dispatch(setProjects(orderedProjects));
+
+    const projectIds = orderedProjects.map((p) => parseInt(p.id));
+    await reArrangeProjects({
+      variables: {
+        input: {
+          projects: projectIds,
+          workspaceId: activeWorkspaceId || workspaceId,
+        },
+      },
+      refetchQueries: ['GetProjects'],
+    });
+    dispatch(setAppLoading(false));
   };
 
   const renderProject = (project, index) => {
     const { title, rag, id, topics, period } = project;
 
+    const handleAccordionChange = (e, expanded) => {
+      if (
+        expanded &&
+        activeProjectId !== parseInt(id, 10) &&
+        topics &&
+        topics[0]
+      ) {
+        dispatch(
+          setSelectedTopic({ ...topics[0], projectId: parseInt(id, 10) })
+        );
+      }
+    };
+
     return (
-      <Draggable draggableId={id} index={index}>
+      <Draggable draggableId={id} index={index} key={id}>
         {(provided) => (
           <Accordion
             key={id}
             classes={{ root: classes.root, expanded: classes.expanded }}
             ref={provided.innerRef}
             {...provided.draggableProps}
+            onChange={handleAccordionChange}
           >
             <AccordionSummary
               classes={{
@@ -232,17 +276,25 @@ function Projects() {
                 content: classes.content,
                 expanded: classes.expanded,
               }}
-              className={activeProjectId === parseInt(id, 10) ? classes.expanded : ''}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
+              className={
+                activeProjectId === parseInt(id, 10) ? classes.expanded : ''
+              }
+              aria-controls='panel1a-content'
+              id='panel1a-header'
               {...provided.dragHandleProps}
             >
-              <Typography component="div" className={classes.projectTitleWrapper}>
+              <Typography
+                component='div'
+                className={classes.projectTitleWrapper}
+              >
                 <div className={classes.dragHandle}>{period}</div>
                 <div className={classes.projectTitle}>{title}</div>
                 {renderRAG(rag)}
                 {isOwner && (
-                  <IconButton className={classes.settingsIcon} onClick={(e) => handleEditProject(e, project)}>
+                  <IconButton
+                    className={classes.settingsIcon}
+                    onClick={(e) => handleEditProject(e, project)}
+                  >
                     <SettingsOutlinedIcon className={classes.svgIcon} />
                   </IconButton>
                 )}
@@ -262,7 +314,11 @@ function Projects() {
 
     if (length === 0) {
       return (
-        <Typography variant="body2" className={classes.noGoalFound} component="em">
+        <Typography
+          variant='body2'
+          className={classes.noGoalFound}
+          component='em'
+        >
           No goals found
         </Typography>
       );
@@ -270,9 +326,13 @@ function Projects() {
 
     return (
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="list">
+        <Droppable droppableId='list'>
           {(provided) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className={classes.droppableArea}
+            >
               {data.map((project, index) => renderProject(project, index))}
               {provided.placeholder}
             </div>
@@ -288,14 +348,18 @@ function Projects() {
   return (
     <>
       <Grid container className={classes.projectHeadingWrap}>
-        <Grid item className="page-title">
-          <Typography className={classes.projectHeading} variant="subtitle1">
+        <Grid item className='page-title'>
+          <Typography className={classes.projectHeading} variant='subtitle1'>
             Goals
           </Typography>
         </Grid>
         {isOwner && (
           <Grid item>
-            <IconButton aria-label="add" onClick={handleAddProject} className={classes.addProject}>
+            <IconButton
+              aria-label='add'
+              onClick={handleAddProject}
+              className={classes.addProject}
+            >
               <AddCircleIcon />
             </IconButton>
             <AddProject

@@ -141,7 +141,7 @@ const REMOVE_USER_WORKSPACE = gql`
 `;
 
 const REARRANGE_PROJECT = gql`
-  mutation RearrangeProject($input: ProjectListInput) {
+  mutation RearrangeProjects($input: ProjectListInput!) {
     reArrangeProjects(input: $input) {
       success
     }
