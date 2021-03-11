@@ -206,6 +206,11 @@ function Videos() {
     setActiveVideo(null);
   }, [selectedTopic]);
 
+  useEffect(() => {
+    if (data && data.videosByTopic && data.videosByTopic[0])
+      setActiveVideo(data.videosByTopic[0]);
+  }, [data]);
+
   const handleAddVideo = () => {
     setActiveVideo(null);
     setOpenModal(true);
@@ -224,8 +229,14 @@ function Videos() {
     setActiveVideo(activeVideo);
   };
 
-  if (loading) return 'Loading...';
-  if (error) return `Error! ${error.message}`;
+  if (loading || error)
+    return (
+      <Grid container direction='row' justify='flex-start'>
+        <Grid item xs={12} className={classes.updatesWrapper}>
+          {loading ? 'Loading...' : `Error! ${error.message}`}
+        </Grid>
+      </Grid>
+    );
 
   return id ? (
     <Grid container direction='row' justify='flex-start'>
