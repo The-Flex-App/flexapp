@@ -13,7 +13,7 @@ import {
   setSelectedTopic,
   selectCurrentTopic,
 } from '../../store/slices/topics';
-import { selectIsOwner } from '../../store/slices/user';
+import { selectIsOwner, selectCurrentUserId } from '../../store/slices/user';
 
 const useStyles = makeStyles((theme) => ({
   noTopicsFound: {
@@ -64,6 +64,7 @@ function Topics(props) {
   const classes = useStyles();
   const isOwner = useSelector(selectIsOwner);
   const selectedTopic = useSelector(selectCurrentTopic);
+  const currentUserId = useSelector(selectCurrentUserId);
   const { projectId, topics } = props;
   const dispatch = useDispatch();
 
@@ -96,7 +97,7 @@ function Topics(props) {
   };
 
   const renderTopic = (topic) => {
-    const { title, id } = topic;
+    const { title, id, userId } = topic;
 
     return (
       <React.Fragment key={id}>
@@ -108,7 +109,7 @@ function Topics(props) {
         >
           <Typography component='div' className={classes.topicTitleWrapper}>
             <div className={classes.topicTitle}>{title}</div>
-            {isOwner && (
+            {(isOwner || userId === currentUserId) && (
               <IconButton
                 className={classes.editButton}
                 onClick={(e) => handleEditTopic(e, topic)}
@@ -145,29 +146,27 @@ function Topics(props) {
   return (
     <>
       {renderTopics(topics || [])}
-      {isOwner && (
-        <React.Fragment>
-          <Typography component='div' className={classes.addTopicWrapper}>
-            <Typography component='span' className={classes.addTopicTypo}>
-              Add activity
-            </Typography>
-            <IconButton
-              aria-label='add'
-              onClick={handleAddTopic}
-              className={classes.addTopicButton}
-            >
-              <AddCircleIcon />
-            </IconButton>
+      <React.Fragment>
+        <Typography component='div' className={classes.addTopicWrapper}>
+          <Typography component='span' className={classes.addTopicTypo}>
+            Add activity
           </Typography>
-          <AddTopic
-            projectId={parseInt(projectId, 10)}
-            selectedTopic={editTopic}
-            open={openModal}
-            onClose={handleClose}
-            onConfirm={handleConfirm}
-          />
-        </React.Fragment>
-      )}
+          <IconButton
+            aria-label='add'
+            onClick={handleAddTopic}
+            className={classes.addTopicButton}
+          >
+            <AddCircleIcon />
+          </IconButton>
+        </Typography>
+        <AddTopic
+          projectId={parseInt(projectId, 10)}
+          selectedTopic={editTopic}
+          open={openModal}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      </React.Fragment>
     </>
   );
 }

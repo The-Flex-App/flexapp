@@ -20,6 +20,7 @@ import {
   selectCurrentTopic,
   setSelectedTopic,
 } from '../../store/slices/topics';
+import { selectCurrentUserId } from '../../store/slices/user';
 
 const useStyles = makeStyles((theme) => ({
   dialogTitle: {
@@ -34,6 +35,7 @@ export default function AddTopic(props) {
   const dispatch = useDispatch();
   const { id: activeTopicId } = useSelector(selectCurrentTopic);
   const { open, onClose, selectedTopic, projectId } = props;
+  const userId = useSelector(selectCurrentUserId);
   const [isDirty, setDirty] = React.useState(false);
   const [isEditMode, setEditMode] = React.useState(!!selectedTopic);
   const [newTopic, setNewTopic] = React.useState(
@@ -83,6 +85,7 @@ export default function AddTopic(props) {
             input: {
               title: newTopic,
               projectId,
+              userId: selectedTopic.userId,
             },
           },
           refetchQueries: ['GetProjects'],
@@ -93,6 +96,7 @@ export default function AddTopic(props) {
             input: {
               title: newTopic,
               projectId,
+              userId,
             },
           },
           refetchQueries: ['GetProjects'],

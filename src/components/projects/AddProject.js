@@ -27,7 +27,10 @@ import {
   EDIT_PROJECT,
   DELETE_PROJECT,
 } from '../../graphql/mutations';
-import { selectCurrentWorkspaceId } from '../../store/slices/user';
+import {
+  selectCurrentWorkspaceId,
+  selectCurrentUserId,
+} from '../../store/slices/user';
 import { selectNextOrder } from '../../store/slices/projects';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { setAppLoading } from '../../store/slices/app';
@@ -79,6 +82,7 @@ export default function AddProject(props) {
   const dispatch = useDispatch();
   const { open, onClose, selectedProject } = props;
   const workspaceId = useSelector(selectCurrentWorkspaceId);
+  const userId = useSelector(selectCurrentUserId);
   const nextOrder = useSelector(selectNextOrder);
   const { projectId: activeProjectId } = useSelector(selectCurrentTopic);
   const { workspaceId: activeWorkspaceId } = useParams();
@@ -174,6 +178,8 @@ export default function AddProject(props) {
               period: projectPeriod,
               title: projectTitle,
               order: selectedProject.order,
+              workspaceId: activeWorkspaceId || workspaceId,
+              userId: selectedProject.userId,
             },
           },
           refetchQueries: ['GetProjects'],
@@ -186,6 +192,7 @@ export default function AddProject(props) {
               rag: projectRag,
               period: projectPeriod,
               workspaceId: activeWorkspaceId || workspaceId,
+              userId,
               order: nextOrder,
             },
           },

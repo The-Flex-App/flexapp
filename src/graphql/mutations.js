@@ -40,6 +40,7 @@ const ADD_TOPIC = gql`
   mutation CreateTopic($input: TopicInput!) {
     createTopic(input: $input) {
       title
+      userId
     }
   }
 `;

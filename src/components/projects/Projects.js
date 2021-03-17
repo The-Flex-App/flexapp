@@ -16,6 +16,7 @@ import AddProject from './AddProject';
 import { REARRANGE_PROJECT } from '../../graphql/mutations';
 import { PROJECTS } from '../../graphql/queries';
 import {
+  selectCurrentUserId,
   selectCurrentWorkspaceId,
   selectIsOwner,
 } from '../../store/slices/user';
@@ -160,6 +161,8 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
+let errorTimer;
+
 function Projects() {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -167,6 +170,7 @@ function Projects() {
   const isOwner = useSelector(selectIsOwner);
   const { projectId: activeProjectId } = useSelector(selectCurrentTopic);
   const projectsData = useSelector(getProjects);
+  const currentUserId = useSelector(selectCurrentUserId);
   const { workspaceId: activeWorkspaceId } = useParams();
   const [reArrangeProjects] = useMutation(REARRANGE_PROJECT);
   const { loading, error, data } = useQuery(PROJECTS, {
@@ -179,6 +183,7 @@ function Projects() {
 
   const [openModal, setOpenModal] = React.useState(false);
   const [editProject, setEditProject] = React.useState(null);
+  const [dragDropError, setDragDropError] = React.useState(null);
 
   const handleAddProject = () => {
     setOpenModal(true);
@@ -223,6 +228,8 @@ function Projects() {
 
     dispatch(setAppLoading(true));
 
+    const oldProjectData = [...projectsData];
+
     const orderedProjects = reorder(
       projectsData,
       result.source.index,
@@ -231,21 +238,31 @@ function Projects() {
 
     dispatch(setProjects(orderedProjects));
 
-    const projectIds = orderedProjects.map((p) => parseInt(p.id));
-    await reArrangeProjects({
-      variables: {
-        input: {
-          projects: projectIds,
-          workspaceId: activeWorkspaceId || workspaceId,
+    try {
+      const projectIds = orderedProjects.map((p) => parseInt(p.id));
+      await reArrangeProjects({
+        variables: {
+          input: {
+            projects: projectIds,
+            workspaceId: activeWorkspaceId || workspaceId,
+          },
         },
-      },
-      refetchQueries: ['GetProjects'],
-    });
-    dispatch(setAppLoading(false));
+        refetchQueries: ['GetProjects'],
+      });
+      dispatch(setAppLoading(false));
+    } catch (error) {
+      dispatch(setProjects(oldProjectData));
+      dispatch(setAppLoading(false));
+      setDragDropError(error);
+      clearTimeout(errorTimer);
+      errorTimer = setTimeout(() => {
+        setDragDropError(null);
+      }, 10000);
+    }
   };
 
   const renderProject = (project, index) => {
-    const { title, rag, id, topics, period } = project;
+    const { title, rag, id, topics, period, userId } = project;
 
     const handleAccordionChange = (e, expanded) => {
       if (
@@ -290,14 +307,15 @@ function Projects() {
                 <div className={classes.dragHandle}>{period}</div>
                 <div className={classes.projectTitle}>{title}</div>
                 {renderRAG(rag)}
-                {isOwner && (
-                  <IconButton
-                    className={classes.settingsIcon}
-                    onClick={(e) => handleEditProject(e, project)}
-                  >
-                    <SettingsOutlinedIcon className={classes.svgIcon} />
-                  </IconButton>
-                )}
+                {isOwner ||
+                  (userId === currentUserId && (
+                    <IconButton
+                      className={classes.settingsIcon}
+                      onClick={(e) => handleEditProject(e, project)}
+                    >
+                      <SettingsOutlinedIcon className={classes.svgIcon} />
+                    </IconButton>
+                  ))}
               </Typography>
             </AccordionSummary>
             <AccordionDetails classes={{ root: classes.accordionDetailsRoot }}>
@@ -353,24 +371,27 @@ function Projects() {
             Goals
           </Typography>
         </Grid>
-        {isOwner && (
-          <Grid item>
-            <IconButton
-              aria-label='add'
-              onClick={handleAddProject}
-              className={classes.addProject}
-            >
-              <AddCircleIcon />
-            </IconButton>
-            <AddProject
-              selectedProject={editProject}
-              open={openModal}
-              onClose={handleClose}
-              onConfirm={handleConfirm}
-            />
-          </Grid>
-        )}
+        <Grid item>
+          <IconButton
+            aria-label='add'
+            onClick={handleAddProject}
+            className={classes.addProject}
+          >
+            <AddCircleIcon />
+          </IconButton>
+          <AddProject
+            selectedProject={editProject}
+            open={openModal}
+            onClose={handleClose}
+            onConfirm={handleConfirm}
+          />
+        </Grid>
       </Grid>
+      {dragDropError && (
+        <Typography color={'secondary'}>
+          <strong>Error:</strong> {dragDropError.message}
+        </Typography>
+      )}
       {renderProjects(projectsData)}
     </>
   );
