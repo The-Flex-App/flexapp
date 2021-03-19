@@ -13,11 +13,6 @@ import { setAppLoading } from '../../store/slices/app';
 import { VIDEOS_TOPIC } from '../../graphql/queries';
 
 const useStyles = makeStyles((theme) => ({
-  videoWrapper: {
-    '& .SVGInline': {
-      display: 'none',
-    },
-  },
   addVideobutton: {
     marginLeft: theme.spacing(1),
   },
@@ -159,13 +154,14 @@ export default function AddVideo(props) {
 
   return (
     <div>
-      <Typography component='div' className={classes.videoWrapper}>
+      <Typography component='div'>
         {renderErrors()}
         <VideoRecorder
           timeLimit={120000}
           showReplayControls={true}
           replayVideoAutoplayAndLoopOff={true}
           onTurnOnCamera={handleCameraTurnOn}
+          renderDisconnectedView={() => {}}
           onRecordingComplete={(
             videoBlob,
             startedAt,

@@ -7,11 +7,14 @@ const PROJECTS = gql`
       title
       description
       rag
+      userId
+      workspaceId
       period
       order
       topics {
         id
         title
+        userId
       }
     }
   }
@@ -22,6 +25,7 @@ const TOPICS = gql`
     topicsByProjectId(projectId: $projectId) {
       id
       title
+      userId
       videos {
         id
         video

@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   addVideo: {},
   cardItem: {
     width: '100%',
-    minHeight: 120,
+    minHeight: 75,
     padding: 0,
     display: 'flex',
     flexDirection: 'column',
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.primary.main,
       boxShadow: `inset 0 0 2px ${theme.palette.primary.main}`,
       borderColor: theme.palette.primary.main,
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0.5),
       '&:hover': {
         backgroundColor: fade(theme.palette.primary.main, 0.04),
       },
@@ -77,31 +77,35 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   videoAuthor: {
-    padding: theme.spacing(0.5, 0, 1),
+    padding: theme.spacing(0.25, 0, 0.5),
     fontSize: 12,
     fontWeight: 'bold',
   },
   cardContent: {
-    padding: theme.spacing(2, 2, 1.5),
+    padding: theme.spacing(1, 1.5, 0.5),
     display: 'flex',
     flexDirection: 'column',
-    minHeight: 120,
+    minHeight: 45,
     boxSizing: 'border-box',
     '&:last-child': {
-      paddingBottom: theme.spacing(1.5),
+      paddingBottom: theme.spacing(0.5),
     },
   },
   thumbContent: {
     fontWeight: 'bold',
     display: '-webkit-box',
-    '-webkit-line-clamp': 3,
+    '-webkit-line-clamp': 2,
     '-webkit-box-orient': 'vertical',
     overflow: 'hidden',
-    marginBottom: theme.spacing(0.5),
     flex: 1,
+    lineHeight: 1.2,
+  },
+  thumbContentWithoutSetting: {
+    '-webkit-line-clamp': 3,
   },
   settingButton: {
     padding: 3,
+    margin: theme.spacing(0, 0.5, 0.5),
   },
 }));
 
@@ -130,6 +134,10 @@ const RenderVideo = (props) => {
     handleVideoSelect({ ...props, isEdit: true });
   };
 
+  const contentClasses = [classes.thumbContent];
+  if (!(isOwner || userId === currentUserId))
+    contentClasses.push(classes.thumbContentWithoutSetting);
+
   return (
     <React.Fragment>
       <Card
@@ -138,18 +146,18 @@ const RenderVideo = (props) => {
         onClick={onUpdateClick}
       >
         <CardContent className={classes.cardContent}>
-          <Typography className={classes.thumbContent}>{title}</Typography>
-          {isOwner || userId === currentUserId ? (
-            <Typography align='right'>
-              <IconButton
-                className={classes.settingButton}
-                onClick={onSettingClick}
-              >
-                <SettingsOutlinedIcon />
-              </IconButton>
-            </Typography>
-          ) : null}
+          <Typography className={contentClasses.join(' ')}>{title}</Typography>
         </CardContent>
+        {isOwner || userId === currentUserId ? (
+          <Typography align='right'>
+            <IconButton
+              className={classes.settingButton}
+              onClick={onSettingClick}
+            >
+              <SettingsOutlinedIcon />
+            </IconButton>
+          </Typography>
+        ) : null}
       </Card>
       <Typography variant='body2' classes={{ root: classes.videoAuthor }}>
         {getFullName(firstName, lastName, email)} &nbsp;
@@ -242,7 +250,9 @@ function Videos() {
     <Grid container direction='row' justify='flex-start'>
       <Grid item xs={2} className={classes.updatesWrapper}>
         <Grid container alignItems='center' className='page-title'>
-          <Typography variant='h5'>Updates</Typography>
+          <Typography variant='subtitle1' color={'primary'}>
+            Updates
+          </Typography>
         </Grid>
         <Typography component='div' className={classes.videoList}>
           <Card
