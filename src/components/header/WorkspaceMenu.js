@@ -161,6 +161,10 @@ export default function WorkspaceMenu(props) {
     return null;
   }
 
+  const activeWorkspace = workspaceList.find(
+    ({ workspaceId }) => !activeWorkspaceId || workspaceId === activeWorkspaceId
+  );
+
   return (
     <Menu
       id='menu-appbar'
@@ -172,7 +176,12 @@ export default function WorkspaceMenu(props) {
           aria-haspopup='true'
           classes={{ root: classes.buttonRoot }}
         >
-          {getFullName(firstName, lastName, email)}'s board
+          {getFullName(
+            activeWorkspace.firstName,
+            activeWorkspace.lastName,
+            email
+          )}
+          's board
         </Typography>
       }
       menuItemsTitle={'Boards shared with me'}

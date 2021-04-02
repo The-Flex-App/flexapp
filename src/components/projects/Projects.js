@@ -307,15 +307,14 @@ function Projects() {
                 <div className={classes.dragHandle}>{period}</div>
                 <div className={classes.projectTitle}>{title}</div>
                 {renderRAG(rag)}
-                {isOwner ||
-                  (userId === currentUserId && (
-                    <IconButton
-                      className={classes.settingsIcon}
-                      onClick={(e) => handleEditProject(e, project)}
-                    >
-                      <SettingsOutlinedIcon className={classes.svgIcon} />
-                    </IconButton>
-                  ))}
+                {(isOwner || userId === currentUserId) && (
+                  <IconButton
+                    className={classes.settingsIcon}
+                    onClick={(e) => handleEditProject(e, project)}
+                  >
+                    <SettingsOutlinedIcon className={classes.svgIcon} />
+                  </IconButton>
+                )}
               </Typography>
             </AccordionSummary>
             <AccordionDetails classes={{ root: classes.accordionDetailsRoot }}>
