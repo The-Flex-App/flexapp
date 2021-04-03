@@ -30,6 +30,7 @@ import {
 import {
   selectCurrentWorkspaceId,
   selectCurrentUserId,
+  selectIsOwner,
 } from '../../store/slices/user';
 import { selectNextOrder } from '../../store/slices/projects';
 import ConfirmationDialog from '../ConfirmationDialog';
@@ -81,6 +82,7 @@ export default function AddProject(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { open, onClose, selectedProject } = props;
+  const isOwner = useSelector(selectIsOwner);
   const workspaceId = useSelector(selectCurrentWorkspaceId);
   const userId = useSelector(selectCurrentUserId);
   const nextOrder = useSelector(selectNextOrder);
@@ -321,7 +323,7 @@ export default function AddProject(props) {
           )}
         </DialogContent>
         <DialogActions>
-          {isEditMode && (
+          {isOwner && isEditMode && (
             <Button
               variant='contained'
               color='secondary'
