@@ -13,7 +13,7 @@ import { ADD_USER } from './graphql/mutations';
 
 // https://aws-amplify.github.io/docs/js/hub
 Hub.listen(/.*/, ({ channel, payload }) =>
-  console.debug(`[hub::${channel}::${payload.event}]`, payload),
+  console.debug(`[hub::${channel}::${payload.event}]`, payload)
 );
 
 // https://aws-amplify.github.io/docs/js/authentication#manual-setup
@@ -80,6 +80,11 @@ const AppWithAuth = () => {
         return;
       }
       const { attributes, username } = user;
+      if (!username || !attributes || !attributes.identities) {
+        history.push('/error', {
+          error: 'Invalid login, please try login with valid credentials.',
+        });
+      }
       const { userId } = JSON.parse(attributes.identities)[0];
       const { given_name, family_name, email } = attributes;
       const userInfo = {
@@ -102,7 +107,7 @@ const AppWithAuth = () => {
               ...(response.data.createUser || {}),
               id: userId,
               isOwner: !workspaceId || response.workspaceId === workspaceId,
-            }),
+            })
           );
         })
         .catch((e) => {
