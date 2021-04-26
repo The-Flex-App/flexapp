@@ -7,9 +7,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import UserInfo from './UserInfo';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
   title: {
     flexGrow: 1,
   },
@@ -27,30 +24,21 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: 'none',
     },
   },
-  appBarRoot: {
-    padding: 0,
-  },
 }));
 
-export default function ButtonAppBar() {
+export default function Header() {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-      <AppBar
-        position='static'
-        color='transparent'
-        classes={{ root: classes.appBarRoot }}
-      >
-        <Toolbar>
-          <Typography variant='h5' className={classes.title}>
-            <Link component={Link} href='/' className={classes.flexTitle}>
-              FLEX
-            </Link>
-          </Typography>
-          <UserInfo />
-        </Toolbar>
-      </AppBar>
-    </div>
+    <AppBar position="static" color="transparent">
+      <Toolbar variant="dense">
+        <Typography variant="h5" className={classes.title}>
+          <Link component={Link} href="/" className={classes.flexTitle}>
+            FLEX
+          </Link>
+        </Typography>
+        <UserInfo />
+      </Toolbar>
+    </AppBar>
   );
 }
