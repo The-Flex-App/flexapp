@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -27,7 +26,13 @@ const useStyles = makeStyles((theme) => ({
 
 const ConfirmationDialog = (props) => {
   const classes = useStyles();
-  const { title, description, onClose, open, ...other } = props;
+  const {
+    title = 'Are you sure?',
+    description = 'Press "Ok" to continue or press "Cancel" to close.',
+    onClose,
+    open,
+    ...other
+  } = props;
 
   const handleCancel = () => {
     onClose(false);
@@ -41,8 +46,8 @@ const ConfirmationDialog = (props) => {
     <Dialog
       disableBackdropClick
       disableEscapeKeyDown
-      maxWidth='xs'
-      aria-labelledby='confirmation-dialog-title'
+      maxWidth="xs"
+      aria-labelledby="confirmation-dialog-title"
       open={open}
       classes={{
         scrollPaper: classes.scrollPaper,
@@ -50,37 +55,22 @@ const ConfirmationDialog = (props) => {
       }}
       {...other}
     >
-      <DialogTitle
-        id='confirmation-dialog-title'
-        classes={{ root: classes.dialogTitleRoot }}
-      >
+      <DialogTitle id="confirmation-dialog-title" classes={{ root: classes.dialogTitleRoot }}>
         {title}
       </DialogTitle>
       <DialogContent>
         <Typography>{description}</Typography>
       </DialogContent>
       <DialogActions classes={{ root: classes.dialogActionsRoot }}>
-        <Button autoFocus onClick={handleCancel} color='primary'>
+        <Button autoFocus onClick={handleCancel} color="primary">
           Cancel
         </Button>
-        <Button onClick={handleOk} color='primary'>
+        <Button onClick={handleOk} color="primary">
           Ok
         </Button>
       </DialogActions>
     </Dialog>
   );
-};
-
-ConfirmationDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  title: PropTypes.string,
-  description: PropTypes.node,
-};
-
-ConfirmationDialog.defaultProps = {
-  title: 'Are you sure?',
-  description: 'Press "Ok" to continue or press "Cancel" to close.',
 };
 
 export default ConfirmationDialog;
