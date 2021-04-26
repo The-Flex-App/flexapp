@@ -1,14 +1,14 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Production build
+name: Staging build
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the develop branch
 on:
   push:
-    branches: [master]
+    branches: [staging]
   pull_request:
-    branches: [master]
+    branches: [staging]
 
 jobs:
   run:
@@ -29,8 +29,8 @@ jobs:
         uses: reggionick/s3-deploy@v3
         with:
           folder: build
-          bucket: ${{ secrets.S3_BUCKET }}
+          bucket: ${{ secrets.S3_BUCKET_STAGING }}
           bucket-region: ${{ secrets.S3_BUCKET_REGION }}
-          dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_STAGING }}
           invalidation: /
           delete-removed: true

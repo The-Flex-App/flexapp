@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "projectflex69a744bd_identitypool_69a744bd",
+    "identityPoolName": "flexappcde978ac_identitypool_cde978ac",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "projec69a744bd",
-    "userPoolName": "projectflex69a744bd_userpool_69a744bd",
+    "resourceNameTruncated": "flexapcde978ac",
+    "userPoolName": "flexappcde978ac_userpool_cde978ac",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "projec69a744bd_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "flexapcde978ac_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "69a744bd",
-    "resourceName": "projectflex69a744bd",
+    "sharedId": "cde978ac",
+    "resourceName": "flexappcde978ac",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [

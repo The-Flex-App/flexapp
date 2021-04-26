@@ -1,20 +1,20 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-projectflex-dev-134935-authRole",
-      "UnauthRoleArn": "arn:aws:iam::262565110104:role/amplify-projectflex-dev-134935-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::262565110104:role/amplify-projectflex-dev-134935-authRole",
+      "AuthRoleName": "amplify-flexapp-dev-213330-authRole",
+      "UnauthRoleArn": "arn:aws:iam::416762491998:role/amplify-flexapp-dev-213330-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::416762491998:role/amplify-flexapp-dev-213330-authRole",
       "Region": "eu-west-2",
-      "DeploymentBucketName": "amplify-projectflex-dev-134935-deployment",
-      "UnauthRoleName": "amplify-projectflex-dev-134935-unauthRole",
-      "StackName": "amplify-projectflex-dev-134935",
-      "StackId": "arn:aws:cloudformation:eu-west-2:262565110104:stack/amplify-projectflex-dev-134935/6a14bf40-1ddb-11eb-bc17-0283d9cf08b8",
-      "AmplifyAppId": "d39y648ohc2jrz"
+      "DeploymentBucketName": "amplify-flexapp-dev-213330-deployment",
+      "UnauthRoleName": "amplify-flexapp-dev-213330-unauthRole",
+      "StackName": "amplify-flexapp-dev-213330",
+      "StackId": "arn:aws:cloudformation:eu-west-2:416762491998:stack/amplify-flexapp-dev-213330/35d1cb50-2c41-11eb-a374-020a477b9a30",
+      "AmplifyAppId": "d21vv26yo5a3sb"
     },
     "categories": {
       "auth": {
-        "projectflex69a744bd": {
-          "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"1318557628490865\",\"client_secret\":\"48f90bb1283b2f4454103f0a37740786\"},{\"ProviderName\":\"Google\",\"client_id\":\"812957620541-ea9mak245pm437uheokbtdp9i3eu633i.apps.googleusercontent.com\",\"client_secret\":\"BkLhsnqAr4CnrFGIVcy1hD4j\"}]"
+        "flexappcde978ac": {
+          "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"198503071883752\",\"client_secret\":\"4e3b6f29f8193266e090db6083735a32\"},{\"ProviderName\":\"Google\",\"client_id\":\"796168075303-7o2kk307qa14b8sjh5moe2iubjahop5d.apps.googleusercontent.com\",\"client_secret\":\"IgQGMBqy998jDeIxjTDcjBxN\"}]"
         }
       }
     }

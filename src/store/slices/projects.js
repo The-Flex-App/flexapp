@@ -1,21 +1,30 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const initialState = {
-  selected: '',
+  data: [],
 };
 
 const projectSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
-    setSelectedProject: (state, { payload }) => {
-      state.selected = payload;
+    setProjects: (state, { payload }) => {
+      state.data = payload;
     },
   },
 });
 
-export const { setSelectedProject } = projectSlice.actions;
+export const { setProjects } = projectSlice.actions;
 
-export const selectedProjectSelector = (state) => state.projects.selected;
+export const getProjects = (state) => state.projects.data || [];
+
+export const selectNextOrder = (state) => {
+  const projects = getProjects(state);
+  if (projects.length) {
+    const lastProject = projects[projects.length - 1];
+    return parseInt(lastProject.order) + 1;
+  }
+  return 1;
+};
 
 export default projectSlice.reducer;
