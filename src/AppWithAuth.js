@@ -43,14 +43,8 @@ const AppWithAuth = () => {
   const userId = useSelector(selectCurrentUserId);
   const history = useHistory();
   const [addUser] = useMutation(ADD_USER);
-  const {
-    isAuthenticated,
-    isLoading,
-    user,
-    signIn,
-    signOut,
-    ready,
-  } = useAuthentication();
+  const { isAuthenticated, isLoading, user, signIn, signOut, ready } =
+    useAuthentication();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -80,12 +74,19 @@ const AppWithAuth = () => {
         return;
       }
       const { attributes, username } = user;
-      if (!username || !attributes || !attributes.identities) {
+      if (
+        !username ||
+        !attributes ||
+        (!attributes.identities && !attributes.email)
+      ) {
         history.push('/error', {
           error: 'Invalid login, please try login with valid credentials.',
         });
       }
-      const { userId } = JSON.parse(attributes.identities)[0];
+      let userId;
+      if (attributes.identities) {
+        userId = JSON.parse(attributes.identities)[0].userId;
+      }
       const { given_name, family_name, email } = attributes;
       const userInfo = {
         id: userId,
@@ -105,7 +106,6 @@ const AppWithAuth = () => {
           dispatch(
             setUser({
               ...(response.data.createUser || {}),
-              id: userId,
               isOwner: !workspaceId || response.workspaceId === workspaceId,
             })
           );

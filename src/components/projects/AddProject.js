@@ -252,6 +252,7 @@ export default function AddProject(props) {
             value={projectTitle || ''}
             onChange={handleNameChange}
             variant='outlined'
+            autoComplete='off'
           />
           <FormControl fullWidth margin='dense' className={classes.formControl}>
             <InputLabel htmlFor='period' variant='outlined'>
@@ -265,6 +266,7 @@ export default function AddProject(props) {
               fullWidth
               variant='outlined'
               margin='dense'
+              autoComplete='off'
             >
               <MenuItem value={'Q1'}>Q1</MenuItem>
               <MenuItem value={'Q2'}>Q2</MenuItem>

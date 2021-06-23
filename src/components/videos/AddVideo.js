@@ -188,6 +188,7 @@ export default function AddVideo(props) {
           variant='outlined'
           fullWidth
           classes={{ root: classes.quickSummaryTextarea }}
+          autoComplete='off'
         />
       </Typography>
       <Typography component='div' align={'right'}>
