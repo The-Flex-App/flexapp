@@ -175,6 +175,7 @@ export default function AddTopic(props) {
             variant='outlined'
             error={!!error}
             helperText={error && error.message}
+            autoComplete='off'
           />
         </DialogContent>
         <DialogActions>

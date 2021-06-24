@@ -158,6 +158,7 @@ export default function Video(props) {
             fullWidth
             value={videoTitle}
             classes={{ root: classes.quickSummaryTextarea }}
+            autoComplete='off'
           />
         ) : (
           <Fragment>
